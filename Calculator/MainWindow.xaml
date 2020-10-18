@@ -1,0 +1,40 @@
+﻿<Window x:Class="Calculator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+        mc:Ignorable="d"
+        fw:AcrylicWindow.Enabled="True"
+        ResizeMode="NoResize"
+        Title="MainWindow" Height="500" Width="930">
+    <Grid x:Name="WindowsGrid">
+        <Grid x:Name="FeaturesGrid" fw:PointerTracker.Enabled="True" Background="#0000" Margin="0,0,0.4,0.4">
+            <StackPanel HorizontalAlignment="Left" Width="154">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Features" Margin="17" FontWeight="DemiBold" Foreground="DeepPink" FontSize="22"/>
+                </StackPanel>
+                <ListView x:Name="FeaturesList" FontSize="15" Margin="0,0,0.4,0" SelectionChanged="FeaturesList_SelectionChanged">
+                    <ListViewItem x:Name="KeypadList" Padding="1">
+                        <StackPanel Orientation="Horizontal" Width="106">
+                            <materialDesign:PackIcon Kind="KeyboardVariant" Margin="15" Foreground="DeepPink"/>
+                            <TextBlock Text="Keypad" VerticalAlignment="Center" Foreground="DeepPink"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <ListViewItem x:Name="ConverterList" Padding="1">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Arrow" Margin="15" Foreground="DeepPink"/>
+                            <TextBlock VerticalAlignment="Center" Text="Converter" Foreground="DeepPink"/>
+                        </StackPanel>
+                    </ListViewItem>
+                </ListView>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="ContentGrid" Background="White" Margin="150,0,0.2,0">
+
+        </Grid>
+    </Grid>
+</Window>
