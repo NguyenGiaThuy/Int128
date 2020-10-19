@@ -33,12 +33,15 @@ namespace Calculator
             {
                 case 0:
                     Output1Label.Content = "Binary";
+                    Output2Label.Content = "Hexadecimal";
                     break;
                 case 1:
                     Output1Label.Content = "Decimal";
+                    Output2Label.Content = "Hexadecimal";
                     break;
                 case 2:
                     Output1Label.Content = "Decimal";
+                    Output2Label.Content = "Binary";
                     break;
                 default:
                     break;
