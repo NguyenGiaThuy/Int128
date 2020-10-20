@@ -32,6 +32,10 @@ QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
 }
 
 QInt ^ QInt::operator/(QInt ^ a, QInt ^ b) {
+  if (b == gcnew QInt) {
+    throw gcnew System::DivideByZeroException("Attempted to divide by zero!");
+  }
+
   QInt ^ result = gcnew QInt;
   *result->_instance = *a->_instance / *b->_instance;
   return result;
