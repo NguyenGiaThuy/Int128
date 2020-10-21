@@ -13,19 +13,19 @@
         <Grid x:Name="FeaturesGrid" fw:PointerTracker.Enabled="True" Background="#0000" Margin="0,0,0.4,0.4">
             <StackPanel HorizontalAlignment="Left" Width="154">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Features" Margin="17" FontWeight="DemiBold" Foreground="DeepPink" FontSize="22"/>
+                    <TextBlock Text="Features" Margin="17" FontWeight="DemiBold" Foreground="Black" FontSize="22"/>
                 </StackPanel>
                 <ListView x:Name="FeaturesList" FontSize="15" Margin="0,0,0.4,0" SelectionChanged="FeaturesList_SelectionChanged">
                     <ListViewItem x:Name="KeypadList" Padding="1">
                         <StackPanel Orientation="Horizontal" Width="106">
-                            <materialDesign:PackIcon Kind="KeyboardVariant" Margin="15" Foreground="DeepPink"/>
-                            <TextBlock Text="Keypad" VerticalAlignment="Center" Foreground="DeepPink"/>
+                            <materialDesign:PackIcon Kind="KeyboardVariant" Margin="15" Foreground="Black"/>
+                            <TextBlock Text="Keypad" VerticalAlignment="Center" Foreground="Black"/>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem x:Name="ConverterList" Padding="1">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Arrow" Margin="15" Foreground="DeepPink"/>
-                            <TextBlock VerticalAlignment="Center" Text="Converter" Foreground="DeepPink"/>
+                            <materialDesign:PackIcon Kind="Arrow" Margin="15" Foreground="Black"/>
+                            <TextBlock VerticalAlignment="Center" Text="Converter" Foreground="black"/>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>
