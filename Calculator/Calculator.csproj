@@ -125,6 +125,10 @@
       <Project>{032b902a-bfd7-4b13-a602-96e1cd1a2661}</Project>
       <Name>Int128-CLI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StringToFormula\StringToFormula.csproj">
+      <Project>{4659bd56-c4d9-4ae1-8075-22f146fceb8f}</Project>
+      <Name>StringToFormula</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets')" />
