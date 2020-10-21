@@ -357,5 +357,15 @@ namespace Calculator
                     break;
             }
         }
+
+        private void LeftParenthese_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RightParenthese_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

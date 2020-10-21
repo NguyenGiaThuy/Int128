@@ -47,9 +47,9 @@
                     Style="{StaticResource ButtonRevealStyle}" Background="#80B0D4D2"/>
                 <Button x:Name="DivideBtn" Tag="Operator" Click="DivideBtn_Click" Content="÷" FontSize="24" FontWeight="Normal" Margin="325,10,120,250" Width="100" Height="70"
                     Style="{StaticResource ButtonRevealStyle}" Background="#80B0D4D2"/>
-                <Button x:Name="ClearEntryBtn" Click="ClearEntryBtn_Click" Content="CE" FontSize="24" FontWeight="Normal" Margin="430,170,10,90" Width="100" Height="70"
+                <Button x:Name="ClearEntryBtn" Click="ClearEntryBtn_Click" Content="CE" FontSize="24" FontWeight="Normal" Margin="540,170,173,90" Height="70"
                     Style="{StaticResource ButtonRevealStyle}"/>
-                <Button x:Name="ClearBtn" Click="ClearBtn_Click" Content="C" FontSize="24" FontWeight="Normal" Margin="430,90,10,170" Width="100" Height="70"
+                <Button x:Name="ClearBtn" Click="ClearBtn_Click" Content="C" FontSize="24" FontWeight="Normal" Margin="593,170,120,90" Height="70"
                     Style="{StaticResource ButtonRevealStyle}"/>
                 <Button x:Name="EqualBtn" Click="EqualBtn_Click" Content="=" FontSize="24" FontWeight="Normal" Margin="430,250,10,10" Width="100" Height="70"
                     Style="{StaticResource ButtonRevealStyle}"/>
@@ -57,6 +57,10 @@
                     Style="{StaticResource ButtonRevealStyle}">
                     <materialDesign:PackIcon Kind="Backspace" Foreground="Black" Height="25" Width="50"/>
                 </Button>
+                <Button x:Name="LeftParenthese" Click="LeftParenthese_Click" Content="(" FontSize="24" FontWeight="Normal" Margin="540,90,173,170" Height="70" Width="47"
+                    Style="{StaticResource ButtonRevealStyle}"/>
+                <Button x:Name="RightParenthese" Click="RightParenthese_Click" Content=")" FontSize="24" FontWeight="Normal" Margin="593,90,120,170" Height="70" Width="47"
+                    Style="{StaticResource ButtonRevealStyle}"/>
             </Grid>
         </Grid>
     </Grid>
