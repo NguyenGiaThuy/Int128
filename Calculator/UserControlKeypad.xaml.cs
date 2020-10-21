@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using CLI.Int128;
-using StringToFormula;
+using SimpleExpressionEngine;
 
 namespace Calculator
 {
@@ -229,9 +229,7 @@ namespace Calculator
                     try
                     {
                         SmallTextBox.Text += LargeTextBox.Text;
-                        QIntStringToFormula qstf = new QIntStringToFormula();
-                        QInt temp = qstf.Eval(SmallTextBox.Text);
-                        result = temp;
+                        result = Parser.Parse(SmallTextBox.Text).Eval();
                         SmallTextBox.Text += '=';
                         LargeTextBox.Text = result.Content;
                     }
@@ -307,7 +305,7 @@ namespace Calculator
                     break;
             }
         }
-
+        
         private void LargeTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)

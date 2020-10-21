@@ -125,9 +125,9 @@
       <Project>{032b902a-bfd7-4b13-a602-96e1cd1a2661}</Project>
       <Name>Int128-CLI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StringToFormula\StringToFormula.csproj">
-      <Project>{4659bd56-c4d9-4ae1-8075-22f146fceb8f}</Project>
-      <Name>StringToFormula</Name>
+    <ProjectReference Include="..\SimpleExpressionEngine\SimpleExpressionEngine.csproj">
+      <Project>{e0e8baad-a574-46fb-89b5-618955d1fa1f}</Project>
+      <Name>SimpleExpressionEngine</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
