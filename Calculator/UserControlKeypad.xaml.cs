@@ -15,147 +15,151 @@ namespace Calculator
     public partial class UserControlKeypad : UserControl
     {
         private char[] numbers = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        private QInt result = null;
-
-        private enum States
-        {
-            OperandClicked,
-            OperatorClicked,
-            LeftParentheseClicked,
-            RightParentheseClicked,
-            DecimalClicked,
-            SignClicked,
-            EvaluationClicked,
-            ExceptionThrown
-        }
+        private bool operatorClicked = false;
+        private bool exceptionThrown = false;
+        private QInt comp = new QInt("0");
+        private QInt result;
 
         public UserControlKeypad()
         {
             InitializeComponent();
+            result = comp;
         }
 
         private void PlusMinusBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (LargeTextBox.Text != "0")
+            {
+                LargeTextBox.Text =
+                    (LargeTextBox.Text.Contains('-')) ?
+                    LargeTextBox.Text.TrimStart('-') :
+                    '-' + LargeTextBox.Text;
+            }
+
+            if (exceptionThrown)
+            {
+                resetState();
+            }
+
+            operatorClicked = false;
         }
 
         private void DotBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnDecimalClicked();
+            onDotClicked();
         }
 
         private void ZeroBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(0);
+            onOperandClicked(0);
         }
 
         private void OneBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(1);
+            onOperandClicked(1);
         }
 
         private void TwoBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(2);
+            onOperandClicked(2);
         }
 
         private void ThreeBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(3);
+            onOperandClicked(3);
         }
 
         private void FourBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(4);
+            onOperandClicked(4);
         }
 
         private void FiveBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(5);
+            onOperandClicked(5);
         }
 
         private void SixBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(6);
+            onOperandClicked(6);
         }
 
         private void SevenBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(7);
+            onOperandClicked(7);
         }
 
         private void EightBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(8);
+            onOperandClicked(8);
         }
 
         private void NineBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperandClicked(9);
+            onOperandClicked(9);
         }
 
         private void AddBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperatorClicked('+');
+            onOperatorClicked('+');
         }
 
         private void SubtractBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperatorClicked('-');
+            onOperatorClicked('-');
         }
 
         private void MultiplyBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperatorClicked('×');
+            onOperatorClicked('×');
         }
 
         private void DivideBtn_Click(object sender, RoutedEventArgs e)
         {
-            OnOperatorClicked('÷');
-        }
-
-        private void LeftParenthese_Click(object sender, RoutedEventArgs e)
-        {
-            OnLeftParentheseClicked();
-        }
-
-        private void RightParenthese_Click(object sender, RoutedEventArgs e)
-        {
-            OnRightParentheseClicked();
-        }
-
-        private void EqualBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OnEvaluateClicked();
+            onOperatorClicked('÷');
         }
 
         private void ClearEntryBtn_Click(object sender, RoutedEventArgs e)
         {
             LargeTextBox.Text = "0";
-            states = States.OperandClicked;
-        }
-
-        private void BackspaceBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OnBackspaceClicked();
+            operatorClicked = false;
         }
 
         private void ClearBtn_Click(object sender, RoutedEventArgs e)
         {
-            ResetState();
+            resetState();
+        }
+
+        private void EqualBtn_Click(object sender, RoutedEventArgs e)
+        {
+            onEqualClicked();
+        }
+
+        private void BackspaceBtn_Click(object sender, RoutedEventArgs e)
+        {
+            onBackspaceClicked();
+        }
+
+        private void LeftParenthese_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RightParenthese_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void LargeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (LargeTextBox.Text.Length > 1 &&
-                !LargeTextBox.Text.Contains('.') &&
-                states != States.ExceptionThrown)
+            if (LargeTextBox.Text.Length > 1 && !LargeTextBox.Text.Contains('.') && !exceptionThrown)
             {
                 LargeTextBox.Text =
                     (LargeTextBox.Text.IndexOfAny(numbers) != -1) ?
                     LargeTextBox.Text.TrimStart('0') :
                     LargeTextBox.Text.Remove(1);
             }
-        }
+        }  
 
         private void LargeTextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
@@ -167,67 +171,162 @@ namespace Calculator
             switch (e.Key)
             {
                 case Key.Enter:
-                    OnEvaluateClicked();
+                    onEqualClicked();
                     break;
                 case Key.Back:
-                    OnBackspaceClicked();
+                    onBackspaceClicked();
                     break;
             }
         }
-
+        
         private void LargeTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.NumPad0:
-                    OnOperandClicked(0);
+                    onOperandClicked(0);
                     break;
                 case Key.NumPad1:
-                    OnOperandClicked(1);
+                    onOperandClicked(1);
                     break;
                 case Key.NumPad2:
-                    OnOperandClicked(2);
+                    onOperandClicked(2);
                     break;
                 case Key.NumPad3:
-                    OnOperandClicked(3);
+                    onOperandClicked(3);
                     break;
                 case Key.NumPad4:
-                    OnOperandClicked(4);
+                    onOperandClicked(4);
                     break;
                 case Key.NumPad5:
-                    OnOperandClicked(5);
+                    onOperandClicked(5);
                     break;
                 case Key.NumPad6:
-                    OnOperandClicked(6);
+                    onOperandClicked(6);
                     break;
                 case Key.NumPad7:
-                    OnOperandClicked(7);
+                    onOperandClicked(7);
                     break;
                 case Key.NumPad8:
-                    OnOperandClicked(8);
+                    onOperandClicked(8);
                     break;
                 case Key.NumPad9:
-                    OnOperandClicked(9);
+                    onOperandClicked(9);
                     break;
                 case Key.Add:
-                    OnOperatorClicked('+');
+                    onOperatorClicked('+');
                     break;
                 case Key.Subtract:
-                    OnOperatorClicked('-');
+                    onOperatorClicked('-');
                     break;
                 case Key.Multiply:
-                    OnOperatorClicked('×');
+                    onOperatorClicked('×');
                     break;
                 case Key.Divide:
-                    OnOperatorClicked('÷');
+                    onOperatorClicked('÷');
                     break;
                 case Key.Decimal:
-                    OnDecimalClicked();
+                    onDotClicked();
                     break;
             }
         }
 
-        private void OnBackspaceClicked()
+        private void onOperandClicked(int num)
+        {
+            if (!operatorClicked)
+            {
+                LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+            }
+            else
+            {
+                LargeTextBox.Text = num.ToString();
+            }
+
+            if (result != comp)
+            {
+                LargeTextBox.Text = num.ToString();
+                SmallTextBox.Text = "";
+                result = comp;
+            }
+
+            if (exceptionThrown)
+            {
+                resetState();
+            }
+
+            operatorClicked = false;
+        }
+
+        private void onOperatorClicked(char op)
+        {
+            if (LargeTextBox.Text.Contains('.'))
+            {
+                LargeTextBox.Text = LargeTextBox.Text.TrimEnd('0');
+                LargeTextBox.Text =
+                    (LargeTextBox.Text.LastIndexOf('.') == LargeTextBox.Text.Length - 1) ?
+                    LargeTextBox.Text.Remove(LargeTextBox.Text.Length - 1) :
+                    LargeTextBox.Text;
+            }
+
+            if (!operatorClicked)
+            {
+                SmallTextBox.Text += LargeTextBox.Text + op;
+            }
+            else
+            {
+                SmallTextBox.Text = SmallTextBox.Text.Remove(SmallTextBox.Text.Length - 1) + op;
+            }
+
+            if (result != comp)
+            {
+                SmallTextBox.Text = result.Content + op;
+                result = comp;
+            }
+
+            if (exceptionThrown)
+            {
+                resetState();
+            }
+
+            operatorClicked = true;
+        }
+
+        private void onEqualClicked()
+        {
+            if (LargeTextBox.Text.Contains('.'))
+            {
+                LargeTextBox.Text = LargeTextBox.Text.TrimEnd('0');
+                LargeTextBox.Text =
+                    (LargeTextBox.Text.LastIndexOf('.') == LargeTextBox.Text.Length - 1) ?
+                    LargeTextBox.Text.Remove(LargeTextBox.Text.Length - 1) :
+                    LargeTextBox.Text;
+            }
+
+            if (!operatorClicked)
+            {
+                if (result == comp)
+                {
+                    try
+                    {
+                        SmallTextBox.Text += LargeTextBox.Text;
+                        result = Parser.Parse(SmallTextBox.Text).Eval();
+                        SmallTextBox.Text += '=';
+                        LargeTextBox.Text = result.Content;
+                    }
+                    catch (DivideByZeroException ex)
+                    {
+                        exceptionThrown = true;
+                        LargeTextBox.Text = ex.Message;
+                    }
+                }
+                else
+                {
+                    SmallTextBox.Text = LargeTextBox.Text + '=';
+                }
+            }
+        }
+
+        private void onBackspaceClicked()
         {
             if (LargeTextBox.Text.Length == 1 ||
                 (LargeTextBox.Text.Length == 2 &&
@@ -241,287 +340,36 @@ namespace Calculator
             }
         }
 
-        private States states;
-
-        private void OnOperandClicked(int num)
+        private void onDotClicked()
         {
-            switch (states)
+            if (!operatorClicked)
             {
-                case States.OperandClicked: // WORKED
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    states = States.OperandClicked;
-                    break;
-                case States.OperatorClicked: // WORKED
-                    LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
-                    break;
-                case States.LeftParentheseClicked:
-                    LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
-                    break;
-                case States.RightParentheseClicked: // WORKED
-                    // Do nothing
-                    break;
-                case States.DecimalClicked: // WORKED
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    states = States.OperandClicked;
-                    break;
-                case States.SignClicked: // WORKED
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    states = States.OperandClicked;
-                    break;
-                case States.EvaluationClicked: // WORKED
-                    ResetState();
-                    LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
-                    break;
-                case States.ExceptionThrown: // WORKED
-                    ResetState();
-                    break;
+                LargeTextBox.Text += (LargeTextBox.Text.Contains('.')) ? "" : ".";
             }
+            else
+            {
+                LargeTextBox.Text = "0.";
+            }
+
+            if (exceptionThrown)
+            {
+                resetState();
+            }
+
+            operatorClicked = false;
         }
 
-        private void OnOperatorClicked(char op)
+        private void onParentheseClicked(char pa)
         {
-            switch (states)
-            {
-                case States.OperandClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.OperatorClicked: // WORKED
-                    SmallTextBox.Text = SmallTextBox.Text.Remove(SmallTextBox.Text.Length - 1) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.LeftParentheseClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.RightParentheseClicked: // WORKED
-                    SmallTextBox.Text += op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.DecimalClicked: // WORKKED
-                    SmallTextBox.Text = NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.SignClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.EvaluationClicked: // WORKED
-                    SmallTextBox.Text = result.Content + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.ExceptionThrown: // WORKED
-                    ResetState();
-                    break;
-            }
         }
 
-        private void OnEvaluateClicked()
-        {
-            try
-            {
-                switch (states)
-                {
-                    case States.OperandClicked: //WORKED 
-                        SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
-                        break;
-                    case States.OperatorClicked: // WORKED
-                        // Do nothing
-                        break;
-                    case States.LeftParentheseClicked:
-                        // Do nothing
-                        break;
-                    case States.RightParentheseClicked: // WORKED
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
-                        break;
-                    case States.DecimalClicked: // WORKED
-                        SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
-                        break;
-                    case States.SignClicked: // WORKED
-                        SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
-                        break;
-                    case States.EvaluationClicked: // WORKED
-                        // Do nothing
-                        break;
-                    case States.ExceptionThrown: // WORKED
-                        ResetState();
-                        break;
-                }
-            }
-            catch (SyntaxException e)
-            {
-                states = States.ExceptionThrown;
-                LargeTextBox.Text = e.Message;
-            }
-            catch (DivideByZeroException e)
-            {
-                states = States.ExceptionThrown;
-                LargeTextBox.Text = e.Message;
-            }
-        }
-
-        private int leftParentheseCount = 0;
-
-        private void OnLeftParentheseClicked()
-        {
-            switch (states)
-            {
-                case States.OperandClicked: // WORKED
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.OperatorClicked: // WORKED
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.LeftParentheseClicked: // WORKED
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.RightParentheseClicked: // WORKED
-                    // Do nothing
-                    break;
-                case States.DecimalClicked: // WORKED
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.SignClicked: // WORKED
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.EvaluationClicked: // WORKED
-                    ResetState();
-                    SmallTextBox.Text = "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.ExceptionThrown: // WORKED
-                    ResetState();
-                    break;
-            }
-        }
-
-        private void OnRightParentheseClicked()
-        {
-            if (leftParentheseCount == 0)
-            {
-                return;
-            }
-
-            switch (states)
-            {
-                case States.OperandClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.OperatorClicked: // WORKED
-                    SmallTextBox.Text += "0)";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.LeftParentheseClicked: // WORKED
-                    // Do nothing
-                    break;
-                case States.RightParentheseClicked: // WORKED
-                    SmallTextBox.Text += ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.DecimalClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.SignClicked: // WORKED
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.EvaluationClicked: // WORKED
-                    // Do nothing
-                    break;
-                case States.ExceptionThrown: // WORKED
-                    ResetState();
-                    break;
-            }
-        }
-
-        private void OnDecimalClicked()
-        {
-            switch (states)
-            {
-                case States.OperandClicked:
-                    LargeTextBox.Text += (LargeTextBox.Text.Contains('.')) ? LargeTextBox.Text : LargeTextBox.Text + ".";
-                    states = States.DecimalClicked;
-                    break;
-                case States.OperatorClicked:
-                    // Do nothing
-                    break;
-                case States.LeftParentheseClicked:
-                    // Do nothing
-                    break;
-                case States.RightParentheseClicked:
-                    // Do nothing
-                    break;
-                case States.DecimalClicked:
-                    // Do nothing
-                    break;
-                case States.SignClicked:
-                    LargeTextBox.Text += (LargeTextBox.Text.Contains('.')) ? LargeTextBox.Text : LargeTextBox.Text + ".";
-                    states = States.DecimalClicked;
-                    break;
-                case States.EvaluationClicked:
-                    ResetState();
-                    LargeTextBox.Text += (LargeTextBox.Text.Contains('.')) ? LargeTextBox.Text : LargeTextBox.Text + ".";
-                    states = States.DecimalClicked;
-                    break;
-                case States.ExceptionThrown:
-                    ResetState();
-                    break;
-            }
-        }
-
-        private void ResetState()
+        private void resetState()
         {
             SmallTextBox.Text = "";
             LargeTextBox.Text = "0";
-            states = States.OperandClicked;
-            leftParentheseCount = 0;
-            result = null;
-        }
-
-        private string NormalizeExpression(string exp)
-        {
-            string res = exp;
-            res = (res.Contains('.')) ? res.TrimEnd('0') : res;
-            res = (res[res.Length - 1] == '.') ? res.TrimEnd('.') : res;
-            return res;
+            operatorClicked = false;
+            exceptionThrown = false;
+            result = comp;
         }
     }
 }
-
-// BUG: 00.5
