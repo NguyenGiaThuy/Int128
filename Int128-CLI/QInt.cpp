@@ -16,24 +16,69 @@ QInt ^ QInt::operator=(QInt ^ other) {
 QInt ^ QInt::operator+(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
   *result->_instance = *a->_instance + *b->_instance;
+
+  // PROBLEM NEEDED TO SOLVE
+  /*if (result < a) {
+    throw gcnew System::OverflowException("Overflow");
+  }*/
+
   return result;
 }
 
 QInt ^ QInt::operator-(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
   *result->_instance = *a->_instance - *b->_instance;
+
+  // PROBLEM NEEDED TO SOLVE
+  /*if (result > a) {
+    throw gcnew System::OverflowException("Overflow");
+  }*/
+
   return result;
 }
 
 QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
   *result->_instance = *a->_instance * *b->_instance;
+
+  // PROBLEM NEEDED TO SOLVE
+  //switch (a->_instance->getContent()[0]) {
+  //  case '0':
+  //    switch (b->_instance->getContent()[0]) {
+  //      case '0':
+  //        if (result->_instance->getContent()[0] == '1') {
+  //          throw gcnew System::OverflowException("Overflow");
+  //        }
+  //        break;
+  //      case '1':
+  //        if (result->_instance->getContent()[0] == '0') {
+  //          throw gcnew System::OverflowException("Overflow");
+  //        }
+  //        break;
+  //    }
+  //    break;
+  //  case '1':
+  //    switch (b->_instance->getContent()[0]) {
+  //      case '0':
+  //        if (result->_instance->getContent()[0] == '0') {
+  //          throw gcnew System::OverflowException("Overflow");
+  //        }
+  //        break;
+  //      case '1':
+  //        if (result->_instance->getContent()[0] == '1') {
+  //          throw gcnew System::OverflowException("Overflow");
+  //        }
+  //        break;
+  //    }
+  //    break;
+  //} 
+
   return result;
 }
 
 QInt ^ QInt::operator/(QInt ^ a, QInt ^ b) {
   if (b == gcnew QInt) {
-    throw gcnew System::DivideByZeroException("Attempted to divide by zero!");
+    throw gcnew System::DivideByZeroException("Attempted to divide by zero");
   }
 
   QInt ^ result = gcnew QInt;

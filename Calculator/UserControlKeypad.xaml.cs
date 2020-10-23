@@ -176,16 +176,13 @@ namespace Calculator
                 case Key.Enter:
                     OnEvaluateClicked();
                     break;
-                case Key.Back:
-                    OnBackspaceClicked();
-                    break;
                 case Key.Delete:
                     ResetState();
                     break;
             }
         }
 
-        private void LargeTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void LargeTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftShift))
             {
@@ -249,6 +246,12 @@ namespace Calculator
                     case Key.OemPeriod:
                         OnDecimalClicked();
                         break;
+                    case Key.S:
+                        OnSignClicked();
+                        break;
+                    case Key.Back:
+                        OnBackspaceClicked();
+                        break;
                 }
             }
             else
@@ -292,7 +295,15 @@ namespace Calculator
             switch (states)
             {
                 case States.OperandClicked:
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                    if(LargeTextBox.Text.Contains('-'))
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                    }
+                    else
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
+                    }
+
                     states = States.OperandClicked;
                     break;
                 case States.OperatorClicked:
@@ -306,12 +317,28 @@ namespace Calculator
                 case States.RightParentheseClicked:
                     // Do nothing
                     break;
-                case States.DecimalClicked: 
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                case States.DecimalClicked:
+                    if(LargeTextBox.Text.Contains('-'))
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                    }
+                    else
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
+                    }
+
                     states = States.OperandClicked;
                     break;
-                case States.SignClicked: 
-                    LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                case States.SignClicked:
+                    if (LargeTextBox.Text.Contains('-'))
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
+                    }
+                    else
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
+                    }
+
                     states = States.OperandClicked;
                     break;
                 case States.EvaluationClicked: 
