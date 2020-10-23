@@ -83,7 +83,7 @@ QInt QInt::operator*(const QInt& other) const {
 
 QInt QInt::operator/(const QInt& other) const {
   if (other == QInt()) {
-    throw std::invalid_argument("Attempted to devide by zero");
+    throw std::invalid_argument("Attempted to divide by zero");
   }
 
   QInt quotient =
@@ -122,7 +122,7 @@ QInt QInt::operator/(const QInt& other) const {
 
 QInt QInt::operator%(const QInt& other) const {
   if (other == QInt()) {
-    throw std::invalid_argument("Attempted to devide by zero");
+    throw std::invalid_argument("Attempted to divide by zero");
   }
 
   QInt quotient =
