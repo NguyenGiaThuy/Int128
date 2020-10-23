@@ -60,11 +60,22 @@ QInt QInt::operator-(const QInt& other) const {
 
 QInt QInt::operator*(const QInt& other) const {
   QInt result;
+  QInt multiplier = ((*this)[MAX_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
+  QInt multiplicand = (other[MAX_LENGTH - 1] ^ 1) ? other : other._getTwoComplement();
 
   size_t i = 0;
   while (i < MAX_LENGTH) {
-    result = (other[i] ^ 1) ? result : result + (*this << i);
+    result = (multiplicand[i] ^ 1) ? result : result + (multiplier << i);
     ++i;
+  }
+
+  result = (other[MAX_LENGTH - 1] ^ (*this)[MAX_LENGTH - 1])
+               ? result._getTwoComplement()
+               : result;
+
+  if ((*this > QInt() && other > QInt() && result < QInt()) ||
+      (*this < QInt() && other < QInt() && result > QInt())) {
+    throw std::overflow_error("Overflow");
   }
 
   return result;
@@ -72,7 +83,7 @@ QInt QInt::operator*(const QInt& other) const {
 
 QInt QInt::operator/(const QInt& other) const {
   if (other == QInt()) {
-    throw std::invalid_argument("Attempted to divide by zero");
+    throw std::invalid_argument("Attempted to devide by zero");
   }
 
   QInt quotient =
@@ -111,7 +122,7 @@ QInt QInt::operator/(const QInt& other) const {
 
 QInt QInt::operator%(const QInt& other) const {
   if (other == QInt()) {
-    throw std::invalid_argument("Attempted to divide by zero");
+    throw std::invalid_argument("Attempted to devide by zero");
   }
 
   QInt quotient =
@@ -149,23 +160,29 @@ QInt QInt::operator%(const QInt& other) const {
 }
 
 bool QInt::operator<(const QInt& other) const {
-  QInt temp = *this - other;
-  return temp[MAX_LENGTH - 1] ^ 0;
+  if (*this == other) {
+    return false;
+  }
+
+  if ((*this)[MAX_LENGTH - 1] ^ other[MAX_LENGTH - 1]) {
+    return other[MAX_LENGTH - 1] ^ 1;
+  } else {
+    for (int i = MAX_LENGTH - 2; i >= 0; i--) {
+      if ((*this)[i] ^ other[i]) return other[i];
+    }
+  }
 }
 
 bool QInt::operator>(const QInt& other) const {
-  QInt temp = *this - other;
-  return (temp[MAX_LENGTH - 1] ^ 1) && (*this != other);
+  return other < *this;
 }
 
 bool QInt::operator<=(const QInt& other) const {
-  QInt temp = *this - other;
-  return (temp[MAX_LENGTH - 1] ^ 0) || (*this == other);
+  return (*this < other) || (*this == other);
 }
 
 bool QInt::operator>=(const QInt& other) const {
-  QInt temp = *this - other;
-  return temp[MAX_LENGTH - 1] ^ 1;
+  return (*this > other) || (*this == other);
 }
 
 bool QInt::operator==(const QInt& other) const {
@@ -188,7 +205,7 @@ QInt QInt::operator>>(size_t position) const {
   return result;
 }
 
- QInt QInt::operator&(const QInt& other) const {
+QInt QInt::operator&(const QInt& other) const {
   QInt result;
   result._bits = (*this)._bits & other._bits;
   return result;
@@ -218,7 +235,7 @@ QInt QInt::rol(size_t position) const {
   size_t i = 0;
   while (i < position) {
     result = result << 1;
-    result[0] = (*this)[MAX_LENGTH - 1];
+    result[0] = (*this)[MAX_LENGTH - 1 - i];
     ++i;
   }
 
@@ -231,7 +248,7 @@ QInt QInt::ror(size_t position) const {
   size_t i = 0;
   while (i < position) {
     result = result >> 1;
-    result[MAX_LENGTH - 1] = (*this)[0];
+    result[MAX_LENGTH - 1] = (*this)[0 + i];
     ++i;
   }
 
@@ -243,32 +260,35 @@ std::string QInt::getContent() const { return (*this)._bits.to_string(); }
 QInt QInt::_getTwoComplement() const { return QInt("1", 2) + ~(*this); }
 
 std::string QInt::hexToBin(const std::string& hex) {
-  constexpr size_t size = MAX_LENGTH / 4;  // Numbers of 4-bit blocks
+  constexpr size_t bchSize = MAX_LENGTH / 4;  // Numbers of 4-bit blocks
 
-  std::string tempHex;
-  if (tempHex[0] >= 'a' || tempHex[0] >= '8') {
-    tempHex = std::string(size, 'f');  // Assign leading 'f'
+  std::string clonedHex;                      // Store cloned hexadecmial string
+  if (clonedHex[0] >= 'A' || 
+      clonedHex[0] >= 'a' || 
+      clonedHex[0] >= '8') {
+    clonedHex = std::string(bchSize, 'F');  // Assign leading 'F'
   } else {
-    tempHex = std::string(size, '0');  // Assign leading zero
+    clonedHex = std::string(bchSize, '0');  // Assign leading zero
   }
-  tempHex.replace(             // Copy "hex"
-      tempHex.size() - hex.size(), hex.size(), hex); 
-  tempHex = toUpper(tempHex);  // Transform all characters to lower case
+  clonedHex.replace(                     // Copy "hex"
+      clonedHex.size() - hex.size(), hex.size(), hex);
 
-  std::bitset<4> carriers[size];           // Block container
-  std::string bin = "";                    // Result string
+  clonedHex = toUpper(clonedHex);       // Transform all characters to upper case
 
-  std::map<char, size_t> hexMap;           // Key-value = char-number
+  std::bitset<4> bchCarriers[bchSize];  // Binary-coded hexadecimal blocks (4-bit each)
+  std::string bin = "";                 // Result string
+
+  std::map<char, size_t> hexMap;     // Key-value = char-number
   for (size_t i = 0; i < 16; ++i) {
     hexMap[HEX_MAP[i]] = i;
   }
 
   size_t i = 0;
-  while (i < size) {
-    carriers[i] = std::bitset<4>(          // Find numbers associate with keys and
-        hexMap.find(tempHex[i])->second);  // convert them to 4-bit binary
+  while (i < bchSize) {
+    bchCarriers[i] = std::bitset<4>(         // Find numbers associate with keys and
+        hexMap.find(clonedHex[i])->second);  // convert them to 4-bit binary
 
-    bin += carriers[i].to_string();
+    bin += bchCarriers[i].to_string();
     ++i;
   }
 
@@ -276,24 +296,24 @@ std::string QInt::hexToBin(const std::string& hex) {
 }
 
 std::string QInt::binToHex(const std::string& bin) {
-  constexpr size_t size = MAX_LENGTH / 4;  // Numbers of 4-bit blocks
-  std::bitset<4> carriers[size];           // Block container
-  std::string hex = "";                    // Result string
-  QInt temp = QInt(bin, 2);                // Store temporary values of input "bin"
+  constexpr size_t bchSize = MAX_LENGTH / 4;  // Numbers of 4-bit blocks
+  std::bitset<4> bchCarriers[bchSize];        // Binary-coded hexadecimal blocks (4-bit each)
+  std::string hex = "";                       // Result string
+  QInt tempBin = QInt(bin, 2);                // Store temporary values of input "bin"
 
   size_t i = 0;
-  while (i < size) {
-    for (size_t j = 0; j < 4; ++j) {   // Shift every 4-bit block and "temp" 4 times
-      carriers[i] = carriers[i] << 1;  // concurrently as they are the same binary
-      carriers[i][0] = temp[MAX_LENGTH - 1];
-      temp = temp << 1;
+  while (i < bchSize) {
+    for (size_t j = 0; j < 4; ++j) {         // Shift every 4-bit block and "tempResult" 4 times
+      bchCarriers[i] = bchCarriers[i] << 1;  // concurrently as they are the same binary
+      bchCarriers[i][0] = tempBin[MAX_LENGTH - 1];
+      tempBin = tempBin << 1;
     }
     ++i;
   }
 
   i = 0;
-  while (i < size) {  // Map every 4-bit block to every hex character
-    hex += HEX_MAP[carriers[i].to_ulong()];
+  while (i < bchSize) {  // Map every 4-bit block to every hex character
+    hex += HEX_MAP[bchCarriers[i].to_ulong()];
     ++i;
   }
 
@@ -302,110 +322,107 @@ std::string QInt::binToHex(const std::string& bin) {
 
 // Reverse double dabble algorithm
 std::string QInt::decToBin(const std::string& dec) {
-  constexpr size_t size = static_cast<size_t>(  // Numbers of 4-bit blocks
+  constexpr size_t bcdSize = static_cast<size_t>(  // Numbers of 4-bit blocks
       customCeil(static_cast<float>(MAX_LENGTH) / 3));
 
-  std::string tempDec(size, '0');
-  if (dec[0] != '-') {  // Copy "dec" and assign leading zeros
-    tempDec.replace(tempDec.size() - dec.size(), dec.size(), dec);
-  } else {              // Copy "dec" without sign and assign leading zeros
-    tempDec.replace(tempDec.begin() + (tempDec.size() - dec.size() + 1),
-                    tempDec.end(), dec.begin() + 1, dec.end());
+  std::string clonedDec(bcdSize, '0');  // Store cloned decimal string
+  if (dec[0] != '-') {                  // Copy "dec" and assign leading zeros
+    clonedDec.replace(clonedDec.size() - dec.size(), dec.size(), dec);
+  } else {                              // Copy "dec" without sign and assign leading zeros
+    clonedDec.replace(clonedDec.begin() + (clonedDec.size() - dec.size() + 1),
+                    clonedDec.end(), dec.begin() + 1, dec.end());
   }
 
-  std::bitset<4> carriers[size];      // Block container
-  std::bitset<1> tempCarriers[size];  // Store the first bit of 4-bit blocks
-  std::string bin = "";               // Result string
-  QInt temp;                          // Store temporary binary result
+  std::bitset<4> bcdCarriers[bcdSize];          // Binary-code decimal blocks (4-bit each)
+  std::bitset<1> bcdFirstBitCarriers[bcdSize];  // Store the first bit of 4-bit blocks
+  std::string bin = "";                         // Result string
+  QInt tempResult;                              // Store temporary binary result
 
-  std::map<char, size_t> decMap;      // Key-value = char-number
+  std::map<char, size_t> decMap;                // Key-value = char-number
   for (size_t i = 0; i < 10; ++i) {
     decMap[DEC_MAP[i]] = i;
   }
 
   size_t i = 0;
-  while (i < size) {
-    carriers[i] = std::bitset<4>(          // Find numbers associate with keys and
-        decMap.find(tempDec[i])->second);  // convert them to 4-bit binary
+  while (i < bcdSize) {
+    bcdCarriers[i] = std::bitset<4>(          // Find numbers associate with keys and
+        decMap.find(clonedDec[i])->second);   // convert them to 4-bit binary
 
     ++i;
   }
 
   i = 0;
-  while (i < MAX_LENGTH) {  // Shift "temp" and all 4-bit blocks as one
-    for (int j = size - 1; j >= 0; --j) {
-      tempCarriers[j][0] = carriers[j][0];
+  while (i < MAX_LENGTH) {  // Shift "tempResult" and all 4-bit blocks as one
+    for (int j = bcdSize - 1; j >= 0; --j) {
+      bcdFirstBitCarriers[j][0] = bcdCarriers[j][0];
     }
 
-    temp = temp >> 1;
-    temp[MAX_LENGTH - 1] = tempCarriers[size - 1][0];
+    tempResult = tempResult >> 1;
+    tempResult[MAX_LENGTH - 1] = bcdFirstBitCarriers[bcdSize - 1][0];
 
-    for (int j = size - 1; j > 0; --j) {  // Shift every 4-bit block
-      carriers[j] = carriers[j] >> 1;
-      carriers[j][3] = tempCarriers[j - 1][0];
-      if (carriers[j].to_ulong() > 7      // Subtract 3 to every block that
-          && i != MAX_LENGTH - 1) {       // is bigger than 7 to ensure
-        carriers[j] = carriers[j] - 3;    // they are in base 10
+    for (int j = bcdSize - 1; j > 0; --j) {  // Shift every 4-bit block
+      bcdCarriers[j] = bcdCarriers[j] >> 1;
+      bcdCarriers[j][3] = bcdFirstBitCarriers[j - 1][0];
+      if (bcdCarriers[j].to_ulong() > 7       // Subtract 3 to every block that
+          && i != MAX_LENGTH - 1) {           // is bigger than 7 to ensure
+        bcdCarriers[j] = bcdCarriers[j] - 3;  // they are in base 10
       }
     }
-    carriers[0] = carriers[0] >> 1;
+    bcdCarriers[0] = bcdCarriers[0] >> 1;
     ++i;
   }
 
   if (dec[0] == '-') {
-    temp = temp._getTwoComplement();
+    tempResult = tempResult._getTwoComplement();
   }
-  bin = temp._bits.to_string();
+  bin = tempResult._bits.to_string();
 
   return bin;
 }
 
 // Double dabble algorithm
 std::string QInt::binToDec(const std::string& bin) {
-  constexpr size_t size = static_cast<size_t>(  // Numbers of 4-bit blocks
+  constexpr size_t bcdSize = static_cast<size_t>(  // Numbers of 4-bit blocks
       customCeil(static_cast<float>(MAX_LENGTH) / 3));
 
-  std::bitset<4> carriers[size];              // Block container
-  std::bitset<1> tempCarriers[size];          // Store the first bit of 4-bit blocks
-  std::string dec =                           // Initialize with empty string
-      (QInt(bin, 2)[MAX_LENGTH - 1] ^ 1)  // (with sign if the first bit is 1)
-          ? ""  
-          : "-";
+  std::bitset<4> bcdCarriers[bcdSize];          // Binary-coded decimal blocks (4-bit each)
+  std::bitset<1> bcdFirstBitCarriers[bcdSize];  // Store the first bit of 4-bit blocks
+  std::string dec =                                   // Initialize with empty string
+      (QInt(bin, 2)[MAX_LENGTH - 1] ^ 1) ? "" : "-";  // (with sign if the first bit is 1)
 
-  QInt temp;
-  if (QInt(bin, 2) != QInt() &&
-      (QInt(bin, 2) << 1) == QInt()) {
-    return INT128_MIN;  // Number cannot be calculated
+  QInt tempResult;                          // Store temporary result
+  if (QInt(bin, 2) != QInt("0", 2) && (QInt(bin, 2) << 1) == QInt("0", 2)) {
+    return INT128_MIN;                      // Number cannot be calculated
   } else {
-    temp =                                  // Initialize with "bin" (with 2's complement
+    tempResult =                            // Initialize with "bin" (with 2's complement
         (QInt(bin, 2)[MAX_LENGTH - 1] ^ 1)  // if the first bit is 1)
             ? QInt(bin, 2) << 1
             : QInt(bin, 2)._getTwoComplement() << 1;
   }
 
   size_t i = 1;
-  while (i < MAX_LENGTH) {                 // Shift "temp" and all 4-bit blocks as one
-    for (int j = size - 2; j >= 0; --j) {  // Store the first bit of "temp" and every block
-      tempCarriers[j][0] = carriers[j + 1][3];
+  while (i < MAX_LENGTH) {  // Shift "tempResult" and all 4-bit blocks as one
+    for (int j = bcdSize - 2; j >= 0; --j) {  
+      bcdFirstBitCarriers[j][0] = bcdCarriers[j + 1][3];  // Store the first bit of "tempResult" and every block
     }
 
-    tempCarriers[size - 1][0] = temp[MAX_LENGTH - 1];
-    temp = temp << 1;
+    bcdFirstBitCarriers[bcdSize - 1][0] = tempResult[MAX_LENGTH - 1];
+    tempResult = tempResult << 1;
 
-    for (int j = size - 1; j > 0; --j) {  // Shift every 4-bit block
-      carriers[j] = carriers[j] << 1;
-      carriers[j][0] = tempCarriers[j][0];
-      if (carriers[j].to_ulong() > 4      // Add 3 to every block that
-          && i != MAX_LENGTH - 1) {       // is bigger than 4 to ensure
-        carriers[j] = carriers[j] + 3;    // they are in base 10
+    for (int j = bcdSize - 1; j > 0; --j) {  // Shift every 4-bit block
+      bcdCarriers[j] = bcdCarriers[j] << 1;
+      bcdCarriers[j][0] = bcdFirstBitCarriers[j][0];
+      if (bcdCarriers[j].to_ulong() > 4       // Add 3 to every block that
+          && i != MAX_LENGTH - 1) {           // is bigger than 4 to ensure
+        bcdCarriers[j] = bcdCarriers[j] + 3;  // they are in base 10
       }
     }
     ++i;
   }
 
   i = 0;
-  while (i < size) {  // Map every 4-bit block to every dec character
-    dec += DEC_MAP[carriers[i].to_ulong()];
+  while (i < bcdSize) {  // Map every 4-bit block to every dec character
+    dec += DEC_MAP[bcdCarriers[i].to_ulong()];
     ++i;
   }
 

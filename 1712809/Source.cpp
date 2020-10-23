@@ -332,12 +332,6 @@ void processQInt(const char* inputFileName, const char* outputFileName) {
 }
 
 int main(int argc, char* argv[]) {
-  //processQInt("input.txt", "output.txt");
-  QInt a("1", 10);
-  QInt b("1", 10);
-  QInt c;
-  c = a + b;
-  cout << c.getContent();
-
+  processQInt("input.txt", "output.txt");
   return 0;
 }

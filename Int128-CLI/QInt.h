@@ -55,6 +55,17 @@ ref class QInt : public ManagedInt128 {
   static array<wchar_t> ^ _hexTokens =
       gcnew array<wchar_t>{'1', '2', '3', '4', '5', '6', '7', '8',
                            '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+ public:
+  static property System::String ^ MaxSize {
+   public:
+    System::String ^ get() { return gcnew System::String(INT128_MAX); }
+  };
+
+  static property System::String ^ MinSize {
+   public:
+    System::String ^ get() { return gcnew System::String(INT128_MIN); }
+  };
 };
 }  // namespace Int128
 }  // namespace CLI

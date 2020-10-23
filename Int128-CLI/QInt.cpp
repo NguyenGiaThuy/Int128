@@ -15,32 +15,56 @@ QInt ^ QInt::operator=(QInt ^ other) {
 
 QInt ^ QInt::operator+(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance + *b->_instance;
-  return result;
+  try {
+    *result->_instance = *a->_instance + *b->_instance;
+    return result;
+  } catch (std::overflow_error) {
+    throw gcnew System::OverflowException("Overflow");
+  }
 }
 
 QInt ^ QInt::operator-(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance - *b->_instance;
-  return result;
+  try {
+    *result->_instance = *a->_instance - *b->_instance;
+    return result;
+  } catch (std::overflow_error) {
+    throw gcnew System::OverflowException("Overflow");
+  }
 }
 
 QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance * *b->_instance;
-  return result;
+  try {
+    *result->_instance = *a->_instance * *b->_instance;
+    return result;
+  } catch (std::overflow_error) {
+    throw gcnew System::OverflowException("Overflow");
+  }
 }
 
 QInt ^ QInt::operator/(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance / *b->_instance;
-  return result;
+  try {
+    *result->_instance = *a->_instance / *b->_instance;
+    return result;
+  } catch (std::overflow_error) {
+    throw gcnew System::OverflowException("Overflow");
+  } catch (std::invalid_argument) {
+    throw gcnew System::DivideByZeroException("Attempted to divide by zero");
+  }
 }
 
 QInt ^ QInt::operator%(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance % *b->_instance;
-  return result;
+  try {
+    *result->_instance = *a->_instance % *b->_instance;
+    return result;
+  } catch (std::overflow_error) {
+    throw gcnew System::OverflowException("Overflow");
+  } catch (std::invalid_argument) {
+    throw gcnew System::DivideByZeroException("Attempted to divide by zero");
+  }
 }
 
 bool QInt::operator<(QInt ^ a, QInt ^ b) {
@@ -132,7 +156,7 @@ System::String ^ QInt::BinToDec(System::String ^ bin) {
   System::String ^ result = gcnew System::String(
       Native::Int128::QInt::binToDec(systemStringToStdString(bin)).c_str());
 
-  if (result[0] == '-') {  // erase leading zeros
+  if (result[0] == '-') {  // Erase leading zeros
     result = result->Remove(1, result->IndexOfAny(_decTokens) - 1);
   } else {
     if (result->IndexOfAny(_decTokens) != -1) {

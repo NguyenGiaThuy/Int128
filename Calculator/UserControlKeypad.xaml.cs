@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -443,6 +445,11 @@ namespace Calculator
                 LargeTextBox.Text = e.Message;
             }
             catch (DivideByZeroException e)
+            {
+                states = States.ExceptionThrown;
+                LargeTextBox.Text = e.Message;
+            }
+            catch(OverflowException e)
             {
                 states = States.ExceptionThrown;
                 LargeTextBox.Text = e.Message;
