@@ -44,6 +44,11 @@ QInt QInt::operator+(const QInt& other) const {
     ++i;
   }
 
+  if ((*this > QInt() && other > QInt() && result < QInt()) ||
+      (*this < QInt() && other < QInt() && result > QInt())) {
+    throw std::overflow_error("Overflow");
+  }
+
   return result;
 }
 
@@ -66,6 +71,10 @@ QInt QInt::operator*(const QInt& other) const {
 }
 
 QInt QInt::operator/(const QInt& other) const {
+  if (other == QInt()) {
+    throw std::invalid_argument("Attempted to divide by zero");
+  }
+
   QInt quotient =
       ((*this)[MAX_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
 
@@ -101,6 +110,10 @@ QInt QInt::operator/(const QInt& other) const {
 }
 
 QInt QInt::operator%(const QInt& other) const {
+  if (other == QInt()) {
+    throw std::invalid_argument("Attempted to divide by zero");
+  }
+
   QInt quotient =
       ((*this)[MAX_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
 
@@ -227,7 +240,7 @@ QInt QInt::ror(size_t position) const {
 
 std::string QInt::getContent() const { return (*this)._bits.to_string(); }
 
-QInt QInt::_getTwoComplement() const { return QInt("1", 10) + ~(*this); }
+QInt QInt::_getTwoComplement() const { return QInt("1", 2) + ~(*this); }
 
 std::string QInt::hexToBin(const std::string& hex) {
   constexpr size_t size = MAX_LENGTH / 4;  // Numbers of 4-bit blocks
@@ -360,8 +373,8 @@ std::string QInt::binToDec(const std::string& bin) {
           : "-";
 
   QInt temp;
-  if (QInt(bin, 2) != QInt("0", 2) &&
-      (QInt(bin, 2) << 1) == QInt("0", 2)) {
+  if (QInt(bin, 2) != QInt() &&
+      (QInt(bin, 2) << 1) == QInt()) {
     return INT128_MIN;  // Number cannot be calculated
   } else {
     temp =                                  // Initialize with "bin" (with 2's complement

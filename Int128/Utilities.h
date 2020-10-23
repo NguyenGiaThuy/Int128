@@ -4,6 +4,7 @@
 #include <cctype>
 #include <map>
 #include <string>
+#include <stdexcept>
 
 namespace {
 std::string toUpper(const std::string& str) {
