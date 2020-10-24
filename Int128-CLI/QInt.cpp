@@ -4,9 +4,9 @@ namespace CLI {
 namespace Int128 {
 QInt::QInt() : ManagedInt128(new Native::Int128::QInt()) {}
 
-QInt::QInt(System::String ^ dec)
-    : ManagedInt128(
-          new Native::Int128::QInt(systemStringToStdString(dec), 10)) {}
+QInt::QInt(System::String ^ decStr)
+    : ManagedInt128(new Native::Int128::QInt(
+          validateDec(systemStringToStdString(decStr)), 10)) {}
 
 QInt ^ QInt::operator=(QInt ^ other) {
   *this->_instance = *other->_instance;
@@ -15,56 +15,64 @@ QInt ^ QInt::operator=(QInt ^ other) {
 
 QInt ^ QInt::operator+(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  try {
-    *result->_instance = *a->_instance + *b->_instance;
-    return result;
-  } catch (std::overflow_error) {
+  *result->_instance = *a->_instance + *b->_instance;
+
+  QInt ^ qint0 = gcnew QInt;
+  if ((a > qint0 && b < qint0 && result < qint0) ||
+      (a < qint0 && b > qint0 && result > qint0)) {
     throw gcnew System::OverflowException("Overflow");
   }
+
+  return result;
 }
 
 QInt ^ QInt::operator-(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  try {
-    *result->_instance = *a->_instance - *b->_instance;
-    return result;
-  } catch (std::overflow_error) {
+  *result->_instance = *a->_instance - *b->_instance;
+
+  QInt ^ qint0 = gcnew QInt;
+  if ((a > qint0 && b < qint0 && result < qint0) ||
+      (a < qint0 && b > qint0 && result > qint0)) {
     throw gcnew System::OverflowException("Overflow");
   }
+
+  return result;
 }
 
 QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
   QInt ^ result = gcnew QInt;
-  try {
-    *result->_instance = *a->_instance * *b->_instance;
-    return result;
-  } catch (std::overflow_error) {
+  *result->_instance = *a->_instance * *b->_instance;
+
+  QInt ^ qint0 = gcnew QInt;
+
+  if ((a > qint0 && b > qint0 && result < qint0) ||
+      (a < qint0 && b < qint0 && result < qint0) ||
+      (a < qint0 && b > qint0 && result > qint0) ||
+      (a > qint0 && b < qint0 && result > qint0)) {
     throw gcnew System::OverflowException("Overflow");
   }
+
+  return result;
 }
 
 QInt ^ QInt::operator/(QInt ^ a, QInt ^ b) {
-  QInt ^ result = gcnew QInt;
-  try {
-    *result->_instance = *a->_instance / *b->_instance;
-    return result;
-  } catch (std::overflow_error) {
-    throw gcnew System::OverflowException("Overflow");
-  } catch (std::invalid_argument) {
+  if (b == gcnew QInt()) {
     throw gcnew System::DivideByZeroException("Attempted to divide by zero");
   }
+
+  QInt ^ result = gcnew QInt;
+  *result->_instance = *a->_instance / *b->_instance;
+  return result;
 }
 
 QInt ^ QInt::operator%(QInt ^ a, QInt ^ b) {
-  QInt ^ result = gcnew QInt;
-  try {
-    *result->_instance = *a->_instance % *b->_instance;
-    return result;
-  } catch (std::overflow_error) {
-    throw gcnew System::OverflowException("Overflow");
-  } catch (std::invalid_argument) {
+  if (b == gcnew QInt()) {
     throw gcnew System::DivideByZeroException("Attempted to divide by zero");
   }
+
+  QInt ^ result = gcnew QInt;
+  *result->_instance = *a->_instance % *b->_instance;
+  return result;
 }
 
 bool QInt::operator<(QInt ^ a, QInt ^ b) {
@@ -91,15 +99,15 @@ bool QInt::operator!=(QInt ^ a, QInt ^ b) {
   return *a->_instance != *b->_instance;
 }
 
-QInt ^ QInt::operator<<(QInt ^ a, size_t position) {
+QInt ^ QInt::operator<<(QInt ^ a, size_t pos) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance << position;
+  *result->_instance = *a->_instance << pos;
   return result;
 }
 
-QInt ^ QInt::operator>>(QInt ^ a, size_t position) {
+QInt ^ QInt::operator>>(QInt ^ a, size_t pos) {
   QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance >> position;
+  *result->_instance = *a->_instance >> pos;
   return result;
 }
 
@@ -127,72 +135,76 @@ QInt ^ QInt::operator~(QInt ^ a) {
   return result;
 }
 
-QInt ^ QInt::rol(size_t position) {
+QInt ^ QInt::rol(size_t pos) {
   QInt ^ result = gcnew QInt;
-  (*(*result)._instance) = (*(*this)._instance).rol(position);
+  *result->_instance = (*this->_instance).rol(pos);
   return result;
 }
 
-QInt ^ QInt::ror(size_t position) {
+QInt ^ QInt::ror(size_t pos) {
   QInt ^ result = gcnew QInt;
-  (*(*result)._instance) = (*(*this)._instance).ror(position);
+  *result->_instance = (*this->_instance).ror(pos);
   return result;
 }
 
-System::String ^ QInt::DecToBin(System::String ^ dec) {
-  System::String ^ result = gcnew System::String(
-      Native::Int128::QInt::decToBin(systemStringToStdString(dec)).c_str());
+System::String ^ QInt::DecToBin(System::String ^ decStr) {
+  System::String ^ resultStr = gcnew System::String(
+      Native::Int128::QInt::hexToBin(validateDec(
+          systemStringToStdString(decStr)))
+          .c_str());
 
-  if (result->Contains("1")) {
-    result = result->TrimStart('0');
+  if (resultStr->Contains("1")) {
+    resultStr = resultStr->TrimStart('0');
   } else {
-    result = result->Remove(1);
+    resultStr = resultStr->Remove(1);
   }
 
-  return result;
+  return resultStr;
 }
 
-System::String ^ QInt::BinToDec(System::String ^ bin) {
-  System::String ^ result = gcnew System::String(
-      Native::Int128::QInt::binToDec(systemStringToStdString(bin)).c_str());
+System::String ^ QInt::BinToDec(System::String ^ binStr) {
+  System::String ^ resultStr = gcnew System::String(
+      Native::Int128::QInt::binToDec(systemStringToStdString(binStr)).c_str());
 
-  if (result[0] == '-') {  // Erase leading zeros
-    result = result->Remove(1, result->IndexOfAny(_decTokens) - 1);
+  if (resultStr[0] == '-') {
+    resultStr = resultStr->Remove(1, resultStr->IndexOfAny(_decTokens) - 1);
   } else {
-    if (result->IndexOfAny(_decTokens) != -1) {
-      result = result->TrimStart('0');
+    if (resultStr->IndexOfAny(_decTokens) != -1) {
+      resultStr = resultStr->TrimStart('0');
     } else {
-      result = result->Remove(1);
+      resultStr = resultStr->Remove(1);
     }
   }
 
-  return result;
+  return resultStr;
 }
 
-System::String ^ QInt::HexToBin(System::String ^ hex) {
-  System::String ^ result = gcnew System::String(
-      Native::Int128::QInt::hexToBin(systemStringToStdString(hex)).c_str());
+System::String ^ QInt::HexToBin(System::String ^ hexStr) {
+  System::String ^ resultStr = gcnew System::String(
+      Native::Int128::QInt::hexToBin(
+          validateHex(systemStringToStdString(hexStr)))
+          .c_str());
 
-  if (result->Contains("1")) {
-    result = result->TrimStart('0');
+  if (resultStr->Contains("1")) {
+    resultStr = resultStr->TrimStart('0');
   } else {
-    result = result->Remove(1);
+    resultStr = resultStr->Remove(1);
   }
 
-  return result;
+  return resultStr;
 }
 
-System::String ^ QInt::BinToHex(System::String ^ bin) {
-  System::String ^ result = gcnew System::String(
-      Native::Int128::QInt::binToHex(systemStringToStdString(bin)).c_str());
+System::String ^ QInt::BinToHex(System::String ^ binStr) {
+  System::String ^ resultStr = gcnew System::String(
+      Native::Int128::QInt::binToHex(systemStringToStdString(binStr)).c_str());
 
-  if (result->IndexOfAny(_hexTokens) != -1) {
-    result = result->TrimStart('0');
+  if (resultStr->IndexOfAny(_hexTokens) != -1) {
+    resultStr = resultStr->TrimStart('0');
   } else {
-    result = result->Remove(1);
+    resultStr = resultStr->Remove(1);
   }
 
-  return result;
+  return resultStr;
 }
 }  // namespace Int128
 }  // namespace CLI

@@ -2,7 +2,9 @@
 
 #include "Utilities.h"
 
-#define MAX_LENGTH 8 * 16
+#define BIN_LENGTH 128
+#define HEX_LENGTH 32
+#define DEC_LENGTH 43
 #define HEX_MAP "0123456789ABCDEF"
 #define DEC_MAP "0123456789"
 #define INT128_MAX "170141183460469231731687303715884105727"
@@ -16,7 +18,7 @@ class QInt {
   QInt(const std::string&, int);
   QInt& operator=(const QInt&);
 
-  std::bitset<MAX_LENGTH>::reference operator[](size_t);
+  std::bitset<BIN_LENGTH>::reference operator[](size_t);
   constexpr bool operator[](size_t) const;
 
   QInt operator+(const QInt&) const;
@@ -54,7 +56,7 @@ class QInt {
   QInt _getTwoComplement() const;
 
  private:
-  std::bitset<MAX_LENGTH> _bits;
+  std::bitset<BIN_LENGTH> _bin;
 };
 }  // namespace Int128
 }  // namespace Native

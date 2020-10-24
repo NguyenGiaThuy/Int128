@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,14 +17,12 @@ namespace Calculator
         private char[] numbers = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         private QInt result = null;
 
-        private enum States
+        private enum State
         {
             OperandClicked,
             OperatorClicked,
             LeftParentheseClicked,
             RightParentheseClicked,
-            DecimalClicked,
-            SignClicked,
             EvaluationClicked,
             ExceptionThrown
         }
@@ -134,7 +130,7 @@ namespace Calculator
         private void ClearEntryBtn_Click(object sender, RoutedEventArgs e)
         {
             LargeTextBox.Text = "0";
-            states = States.OperandClicked;
+            state = State.OperandClicked;
         }
 
         private void BackspaceBtn_Click(object sender, RoutedEventArgs e)
@@ -157,7 +153,7 @@ namespace Calculator
 
             if (LargeTextBox.Text.Length > 1 &&
                 !LargeTextBox.Text.Contains('.') &&
-                states != States.ExceptionThrown)
+                state != State.ExceptionThrown)
             {
                 LargeTextBox.Text =
                     (LargeTextBox.Text.IndexOfAny(numbers) != -1) ?
@@ -290,65 +286,41 @@ namespace Calculator
             }
         }
 
-        private States states;
+        private State state;
 
         private void OnOperandClicked(int num)
         {
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked:
+                case State.OperandClicked:
                     if(LargeTextBox.Text.Contains('-'))
-                    {
-                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    }
-                    else
                     {
                         LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
                     }
+                    else
+                    {
+                        LargeTextBox.Text += (LargeTextBox.Text.Length < 38) ? num.ToString() : "";
+                    }
 
-                    states = States.OperandClicked;
+                    state = State.OperandClicked;
                     break;
-                case States.OperatorClicked:
+                case State.OperatorClicked:
                     LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
+                    state = State.OperandClicked;
                     break;
-                case States.LeftParentheseClicked:
+                case State.LeftParentheseClicked:
                     LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
+                    state = State.OperandClicked;
                     break;
-                case States.RightParentheseClicked:
+                case State.RightParentheseClicked:
                     // Do nothing
                     break;
-                case States.DecimalClicked:
-                    if(LargeTextBox.Text.Contains('-'))
-                    {
-                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    }
-                    else
-                    {
-                        LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
-                    }
-
-                    states = States.OperandClicked;
-                    break;
-                case States.SignClicked:
-                    if (LargeTextBox.Text.Contains('-'))
-                    {
-                        LargeTextBox.Text += (LargeTextBox.Text.Length < 40) ? num.ToString() : "";
-                    }
-                    else
-                    {
-                        LargeTextBox.Text += (LargeTextBox.Text.Length < 39) ? num.ToString() : "";
-                    }
-
-                    states = States.OperandClicked;
-                    break;
-                case States.EvaluationClicked: 
+                case State.EvaluationClicked: 
                     ResetState();
                     LargeTextBox.Text = num.ToString();
-                    states = States.OperandClicked;
+                    state = State.OperandClicked;
                     break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -356,37 +328,32 @@ namespace Calculator
 
         private void OnOperatorClicked(char op)
         {
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked: 
+                case State.OperandClicked: 
                     SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
+                    LargeTextBox.Text = "0";
+                    state = State.OperatorClicked;
                     break;
-                case States.OperatorClicked: 
+                case State.OperatorClicked: 
                     SmallTextBox.Text = SmallTextBox.Text.Remove(SmallTextBox.Text.Length - 1) + op.ToString();
-                    states = States.OperatorClicked;
+                    state = State.OperatorClicked;
                     break;
-                case States.LeftParentheseClicked: 
+                case State.LeftParentheseClicked: 
                     SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
+                    LargeTextBox.Text = "0";
+                    state = State.OperatorClicked;
                     break;
-                case States.RightParentheseClicked: 
+                case State.RightParentheseClicked: 
                     SmallTextBox.Text += op.ToString();
-                    states = States.OperatorClicked;
+                    state = State.OperatorClicked;
                     break;
-                case States.DecimalClicked:
-                    SmallTextBox.Text = NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.SignClicked: 
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
-                    states = States.OperatorClicked;
-                    break;
-                case States.EvaluationClicked: 
+                case State.EvaluationClicked: 
                     SmallTextBox.Text = result.Content + op.ToString();
-                    states = States.OperatorClicked;
+                    LargeTextBox.Text = "0";
+                    state = State.OperatorClicked;
                     break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -396,62 +363,49 @@ namespace Calculator
         {
             try
             {
-                switch (states)
+                switch (state)
                 {
-                    case States.OperandClicked:
+                    case State.OperandClicked:
                         SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
                         result = Parser.Parse(SmallTextBox.Text).Eval();
                         SmallTextBox.Text += "=";
                         LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
+                        state = State.EvaluationClicked;
                         break;
-                    case States.OperatorClicked: 
+                    case State.OperatorClicked: 
                         // Do nothing
                         break;
-                    case States.LeftParentheseClicked:
+                    case State.LeftParentheseClicked:
                         // Do nothing
                         break;
-                    case States.RightParentheseClicked: 
+                    case State.RightParentheseClicked: 
                         result = Parser.Parse(SmallTextBox.Text).Eval();
                         SmallTextBox.Text += "=";
                         LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
+                        state = State.EvaluationClicked;
                         break;
-                    case States.DecimalClicked: 
-                        SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
+                    case State.EvaluationClicked:
+                        SmallTextBox.Text = LargeTextBox.Text + "=";
+                        state = State.EvaluationClicked;
                         break;
-                    case States.SignClicked: 
-                        SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text);
-                        result = Parser.Parse(SmallTextBox.Text).Eval();
-                        SmallTextBox.Text += "=";
-                        LargeTextBox.Text = result.Content;
-                        states = States.EvaluationClicked;
-                        break;
-                    case States.EvaluationClicked: 
-                        // Do nothing
-                        break;
-                    case States.ExceptionThrown: 
+                    case State.ExceptionThrown: 
                         ResetState();
                         break;
                 }
             }
             catch (SyntaxException e)
             {
-                states = States.ExceptionThrown;
+                state = State.ExceptionThrown;
                 LargeTextBox.Text = e.Message;
             }
             catch (DivideByZeroException e)
             {
-                states = States.ExceptionThrown;
+                state = State.ExceptionThrown;
                 LargeTextBox.Text = e.Message;
             }
             catch(OverflowException e)
             {
-                states = States.ExceptionThrown;
+                state = State.ExceptionThrown;
                 LargeTextBox.Text = e.Message;
             }
         }
@@ -460,43 +414,34 @@ namespace Calculator
 
         private void OnLeftParentheseClicked()
         {
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked: 
+                case State.OperandClicked: 
+                    SmallTextBox.Text += "(";
+                    LargeTextBox.Text = "0";
+                    leftParentheseCount++;
+                    state = State.LeftParentheseClicked;
+                    break;
+                case State.OperatorClicked: 
                     SmallTextBox.Text += "(";
                     leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
+                    state = State.LeftParentheseClicked;
                     break;
-                case States.OperatorClicked: 
+                case State.LeftParentheseClicked: 
                     SmallTextBox.Text += "(";
                     leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
+                    state = State.LeftParentheseClicked;
                     break;
-                case States.LeftParentheseClicked: 
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.RightParentheseClicked: 
+                case State.RightParentheseClicked: 
                     // Do nothing
                     break;
-                case States.DecimalClicked: 
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.SignClicked: 
-                    SmallTextBox.Text += "(";
-                    leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
-                    break;
-                case States.EvaluationClicked: 
+                case State.EvaluationClicked: 
                     ResetState();
                     SmallTextBox.Text = "(";
                     leftParentheseCount++;
-                    states = States.LeftParentheseClicked;
+                    state = State.LeftParentheseClicked;
                     break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -509,40 +454,31 @@ namespace Calculator
                 return;
             }
 
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked: 
+                case State.OperandClicked: 
                     SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
+                    LargeTextBox.Text = "0";
                     leftParentheseCount--;
-                    states = States.RightParentheseClicked;
+                    state = State.RightParentheseClicked;
                     break;
-                case States.OperatorClicked: 
+                case State.OperatorClicked: 
                     SmallTextBox.Text += "0)";
                     leftParentheseCount--;
-                    states = States.RightParentheseClicked;
+                    state = State.RightParentheseClicked;
                     break;
-                case States.LeftParentheseClicked: 
+                case State.LeftParentheseClicked: 
                     // Do nothing
                     break;
-                case States.RightParentheseClicked: 
+                case State.RightParentheseClicked: 
                     SmallTextBox.Text += ")";
                     leftParentheseCount--;
-                    states = States.RightParentheseClicked;
+                    state = State.RightParentheseClicked;
                     break;
-                case States.DecimalClicked: 
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.SignClicked: 
-                    SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + ")";
-                    leftParentheseCount--;
-                    states = States.RightParentheseClicked;
-                    break;
-                case States.EvaluationClicked: 
+                case State.EvaluationClicked: 
                     // Do nothing
                     break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -550,38 +486,30 @@ namespace Calculator
 
         private void OnDecimalClicked()
         {
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked: 
+                case State.OperandClicked: 
                     LargeTextBox.Text = (LargeTextBox.Text.Contains('.')) ?
                         LargeTextBox.Text : LargeTextBox.Text + ".";
-                    states = States.DecimalClicked;
+                    state = State.OperandClicked;
                     break;
-                case States.OperatorClicked: 
-                    LargeTextBox.Text = "0.";
-                    states = States.DecimalClicked;
+                case State.OperatorClicked: 
+                    LargeTextBox.Text += ".";
+                    state = State.OperandClicked;
                     break;
-                case States.LeftParentheseClicked: 
-                    LargeTextBox.Text = "0.";
-                    states = States.DecimalClicked;
+                case State.LeftParentheseClicked: 
+                    LargeTextBox.Text += ".";
+                    state = State.OperandClicked;
                     break;
-                case States.RightParentheseClicked: 
+                case State.RightParentheseClicked: 
                     // Do nothing
                     break;
-                case States.DecimalClicked: 
-                    // Do nothing
-                    break;
-                case States.SignClicked: 
-                    LargeTextBox.Text = (LargeTextBox.Text.Contains('.')) ?
-                        LargeTextBox.Text : LargeTextBox.Text + ".";
-                    states = States.DecimalClicked;
-                    break;
-                case States.EvaluationClicked: 
+                case State.EvaluationClicked: 
                     ResetState();
-                    LargeTextBox.Text = "0.";
-                    states = States.DecimalClicked;
+                    LargeTextBox.Text += ".";
+                    state = State.OperandClicked;
                     break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -589,36 +517,27 @@ namespace Calculator
 
         private void OnSignClicked()
         {
-            switch (states)
+            switch (state)
             {
-                case States.OperandClicked: 
+                case State.OperandClicked: 
                     LargeTextBox.Text = (LargeTextBox.Text.Contains('-')) ?
                         LargeTextBox.Text.TrimStart('-') : "-" + LargeTextBox.Text;
-                    states = States.SignClicked;
                     break;
-                case States.OperatorClicked: 
+                case State.OperatorClicked: 
                     // Do nothing
                     break;
-                case States.LeftParentheseClicked: 
+                case State.LeftParentheseClicked: 
                     // Do nothing
                     break;
-                case States.RightParentheseClicked: 
+                case State.RightParentheseClicked: 
                     // Do nothing
                     break;
-                case States.DecimalClicked: 
+                case State.EvaluationClicked:
                     LargeTextBox.Text = (LargeTextBox.Text.Contains('-')) ?
                         LargeTextBox.Text.TrimStart('-') : "-" + LargeTextBox.Text;
-                    states = States.SignClicked;
+                    result = ~result + new QInt("1");
                     break;
-                case States.SignClicked: 
-                    LargeTextBox.Text = (LargeTextBox.Text.Contains('-')) ?
-                        LargeTextBox.Text.TrimStart('-') : "-" + LargeTextBox.Text;
-                    states = States.SignClicked;
-                    break;
-                case States.EvaluationClicked: 
-                    // Do nothing
-                    break;
-                case States.ExceptionThrown: 
+                case State.ExceptionThrown: 
                     ResetState();
                     break;
             }
@@ -628,7 +547,7 @@ namespace Calculator
         {
             SmallTextBox.Text = "";
             LargeTextBox.Text = "0";
-            states = States.OperandClicked;
+            state = State.OperandClicked;
             leftParentheseCount = 0;
             result = null;
         }
