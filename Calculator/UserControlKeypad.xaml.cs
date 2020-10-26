@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -407,6 +408,11 @@ namespace Calculator
             {
                 state = State.ExceptionThrown;
                 LargeTextBox.Text = e.Message;
+            }
+            catch(ExternalException)
+            {
+                state = State.ExceptionThrown;
+                LargeTextBox.Text = "Bug occured";
             }
         }
 

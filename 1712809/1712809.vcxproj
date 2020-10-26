@@ -146,6 +146,10 @@
       <Project>{2ad6eb44-5b46-4718-8776-8dad5a56775f}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fileprocessing.h" />
+    <ClInclude Include="testdrive.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

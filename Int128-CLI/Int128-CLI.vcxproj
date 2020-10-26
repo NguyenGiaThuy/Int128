@@ -111,11 +111,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Int128\Int128.vcxproj">
-      <Project>{2ad6eb44-5b46-4718-8776-8dad5a56775f}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="QInt.h" />
     <ClInclude Include="ManagedInt128.h" />
   </ItemGroup>
@@ -126,6 +121,11 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Int128\Int128.vcxproj">
+      <Project>{2ad6eb44-5b46-4718-8776-8dad5a56775f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

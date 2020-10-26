@@ -1,7 +1,7 @@
 #include "QInt.h"
 
-namespace Native {
-namespace Int128 {
+namespace native {
+namespace int128 {
 QInt::QInt() { (*this)._bin = std::bitset<BIN_LENGTH>(); }
 
 QInt::QInt(const std::string& str, int format) {
@@ -10,10 +10,12 @@ QInt::QInt(const std::string& str, int format) {
       (*this)._bin = std::bitset<BIN_LENGTH>(str);
       break;
     case 10:
-      (*this)._bin = std::bitset<BIN_LENGTH>(QInt::decToBin(validateDec(str)));
+      (*this)._bin =
+          std::bitset<BIN_LENGTH>(QInt::decToBin(Utility::validateDec(str)));
       break;
     case 16:
-      (*this)._bin = std::bitset<BIN_LENGTH>(QInt::hexToBin(validateHex(str)));
+      (*this)._bin =
+          std::bitset<BIN_LENGTH>(QInt::hexToBin(Utility::validateHex(str)));
       break;
   }
 }
@@ -149,6 +151,8 @@ bool QInt::operator<(const QInt& other) const {
       if ((*this)[i] ^ other[i]) return other[i];
     }
   }
+
+  throw std::runtime_error("Cannot return value");
 }
 
 bool QInt::operator>(const QInt& other) const {
@@ -241,7 +245,7 @@ std::string QInt::hexToBin(const std::string& hexStr) {
   std::bitset<4> bchCarriers[HEX_LENGTH];     // Binary-coded hexadecimal blocks (4-bit each)
   std::string binStr = "";                    // Result string
   std::map<char, size_t> hexMap = 
-      getMap(HEX_MAP, 16);
+      Utility::getMap(HEX_MAP, 16);
 
   size_t i = 0;
   while (i < HEX_LENGTH) {
@@ -286,12 +290,12 @@ std::string QInt::decToBin(const std::string& decStr) {
   QInt bin;                                        // Store temporary binary number
   std::string binStr = "";                         // Result string
   std::map<char, size_t> decMap = 
-      getMap(DEC_MAP, 10);
+      Utility::getMap(DEC_MAP, 10);
 
   size_t i = 0;
   while (i < DEC_LENGTH) {
-    bcdCarriers[i] = std::bitset<4>(       // Find numbers associate with keys and
-        decMap.find(decStr[i])->second);   // convert them to 4-bit binary
+    bcdCarriers[i] = std::bitset<4>(           // Find numbers associate with keys and
+        decMap.find(decStr[i + 1])->second);   // convert them to 4-bit binary
     ++i;
   }
 
@@ -310,7 +314,8 @@ std::string QInt::decToBin(const std::string& decStr) {
 
       if (bcdCarriers[j].to_ulong() > 7         // Subtract 3 to every block that
           && i != BIN_LENGTH - 1) {             // is bigger than 7 to ensure
-        bcdCarriers[j] = bcdCarriers[j] - 3;    // they are in base 10
+        bcdCarriers[j] =                        // they are in base 10
+            Utility::subtract(bcdCarriers[j], 3);  
       }
     }
 
@@ -358,7 +363,8 @@ std::string QInt::binToDec(const std::string& binStr) {
 
       if (bcdCarriers[j].to_ulong() > 4         // Add 3 to every block that
           && i != BIN_LENGTH - 1) {             // is bigger than 4 to ensure
-        bcdCarriers[j] = bcdCarriers[j] + 3;    // they are in base 10
+        bcdCarriers[j] =                        // they are in base 10
+            Utility::add(bcdCarriers[j], 3);  
       }
     }
     ++i;
@@ -372,5 +378,5 @@ std::string QInt::binToDec(const std::string& binStr) {
 
   return decStr;
 }
-}  // namespace Int128
-}  // namespace Native
+}  // namespace int128
+}  // namespace native

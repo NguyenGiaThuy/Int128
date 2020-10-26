@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utilities.h"
+#include "Utility.h"
 
 #define BIN_LENGTH 128
 #define HEX_LENGTH 32
@@ -10,8 +10,8 @@
 #define INT128_MAX "170141183460469231731687303715884105727"
 #define INT128_MIN "-170141183460469231731687303715884105728"
 
-namespace Native {
-namespace Int128 {
+namespace native {
+namespace int128 {
 class QInt {
  public:
   QInt();
@@ -58,5 +58,5 @@ class QInt {
  private:
   std::bitset<BIN_LENGTH> _bin;
 };
-}  // namespace Int128
-}  // namespace Native
+}  // namespace int128
+}  // namespace native

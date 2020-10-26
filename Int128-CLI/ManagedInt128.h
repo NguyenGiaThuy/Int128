@@ -5,7 +5,7 @@ namespace Int128 {
 public
 ref class ManagedInt128 {
  public:
-  ManagedInt128(Native::Int128::QInt* instance) : _instance(instance) {}
+  ManagedInt128(native::int128::QInt* instance) : _instance(instance) {}
 
   ~ManagedInt128() {
     if (_instance != nullptr) {
@@ -20,7 +20,7 @@ ref class ManagedInt128 {
   }
 
  protected:
-  Native::Int128::QInt* _instance;
+  native::int128::QInt* _instance;
 
  protected:
   static std::string systemStringToStdString(System::String ^ systemString) {

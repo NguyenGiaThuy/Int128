@@ -2,11 +2,11 @@
 
 namespace CLI {
 namespace Int128 {
-QInt::QInt() : ManagedInt128(new Native::Int128::QInt()) {}
+QInt::QInt() : ManagedInt128(new native::int128::QInt()) {}
 
 QInt::QInt(System::String ^ decStr)
-    : ManagedInt128(new Native::Int128::QInt(
-          validateDec(systemStringToStdString(decStr)), 10)) {}
+    : ManagedInt128(
+          new native::int128::QInt((systemStringToStdString(decStr)), 10)) {}
 
 QInt ^ QInt::operator=(QInt ^ other) {
   *this->_instance = *other->_instance;
@@ -149,8 +149,8 @@ QInt ^ QInt::ror(size_t pos) {
 
 System::String ^ QInt::DecToBin(System::String ^ decStr) {
   System::String ^ resultStr = gcnew System::String(
-      Native::Int128::QInt::hexToBin(validateDec(
-          systemStringToStdString(decStr)))
+      native::int128::QInt::decToBin(
+          native::int128::Utility::validateDec(systemStringToStdString(decStr)))
           .c_str());
 
   if (resultStr->Contains("1")) {
@@ -164,7 +164,7 @@ System::String ^ QInt::DecToBin(System::String ^ decStr) {
 
 System::String ^ QInt::BinToDec(System::String ^ binStr) {
   System::String ^ resultStr = gcnew System::String(
-      Native::Int128::QInt::binToDec(systemStringToStdString(binStr)).c_str());
+      native::int128::QInt::binToDec(systemStringToStdString(binStr)).c_str());
 
   if (resultStr[0] == '-') {
     resultStr = resultStr->Remove(1, resultStr->IndexOfAny(_decTokens) - 1);
@@ -181,8 +181,8 @@ System::String ^ QInt::BinToDec(System::String ^ binStr) {
 
 System::String ^ QInt::HexToBin(System::String ^ hexStr) {
   System::String ^ resultStr = gcnew System::String(
-      Native::Int128::QInt::hexToBin(
-          validateHex(systemStringToStdString(hexStr)))
+      native::int128::QInt::hexToBin(
+          native::int128::Utility::validateHex(systemStringToStdString(hexStr)))
           .c_str());
 
   if (resultStr->Contains("1")) {
@@ -196,7 +196,7 @@ System::String ^ QInt::HexToBin(System::String ^ hexStr) {
 
 System::String ^ QInt::BinToHex(System::String ^ binStr) {
   System::String ^ resultStr = gcnew System::String(
-      Native::Int128::QInt::binToHex(systemStringToStdString(binStr)).c_str());
+      native::int128::QInt::binToHex(systemStringToStdString(binStr)).c_str());
 
   if (resultStr->IndexOfAny(_hexTokens) != -1) {
     resultStr = resultStr->TrimStart('0');

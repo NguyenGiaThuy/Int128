@@ -18,10 +18,10 @@
     <ClInclude Include="QInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities.h">
+    <ClInclude Include="Int128.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Int128.h">
+    <ClInclude Include="Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
