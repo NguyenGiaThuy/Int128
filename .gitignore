@@ -3,9 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# User customed ignore
-1712809/
-
 # User-specific files
 *.rsuser
 *.suo
@@ -15,6 +12,9 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+
+# User customed ignore
+1712809/
 
 # Build results
 [Dd]ebug/
