@@ -45,7 +45,7 @@ ref class QInt : public ManagedInt128 {
   property System::String ^ Content {
    public:
     System::String ^ get() {
-      return BinToDec(gcnew System::String(_instance->getContent().c_str()));
+      return BinToDec(gcnew System::String(_instance->getBin().c_str()));
     }
   };
 

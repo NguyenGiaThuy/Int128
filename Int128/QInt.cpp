@@ -2,46 +2,49 @@
 
 namespace native {
 namespace int128 {
-QInt::QInt() { (*this)._bin = std::bitset<BIN_LENGTH>(); }
+QInt::QInt() { this->_bin = std::bitset<BIN_LENGTH>(); }
 
 QInt::QInt(const std::string& str, int format) {
   switch (format) {
     case 2:
-      (*this)._bin = std::bitset<BIN_LENGTH>(str);
+      this->_bin = std::bitset<BIN_LENGTH>(str);
       break;
     case 10:
-      (*this)._bin =
-          std::bitset<BIN_LENGTH>(QInt::decToBin(Utility::validateDec(str)));
+      this->_bin =
+          std::bitset<BIN_LENGTH>(QInt::decToBin(Utility::formatDecStr(str)));
       break;
     case 16:
-      (*this)._bin =
-          std::bitset<BIN_LENGTH>(QInt::hexToBin(Utility::validateHex(str)));
+      this->_bin =
+          std::bitset<BIN_LENGTH>(QInt::hexToBin(Utility::formatHexStr(str)));
       break;
   }
 }
 
 QInt& QInt::operator=(const QInt& other) {
-  (*this)._bin = other._bin;
+  this->_bin = other._bin;
   return *this;
 }
 
 std::bitset<BIN_LENGTH>::reference QInt::operator[](size_t pos) {
-  return (*this)._bin[pos];
+  return this->_bin[pos];
 }
 
 constexpr bool QInt::operator[](size_t pos) const {
-  return (*this)._bin[pos];
+  return this->_bin[pos];
 }
 
 QInt QInt::operator+(const QInt& other) const {
-  QInt result;
-  std::bitset<1> carrier;
+  QInt result;             // Store the result
+  std::bitset<1> carrier;  // Store the overflow bit
 
+  // Evaluate bit by bit of two QInts
   size_t i = 0;
   while (i < BIN_LENGTH) {
-    result[i] = (*this)[i] ^ other[i] ^ carrier[0];
-    carrier = ((*this)[i] & other[i]) | ((*this)[i] & carrier[0]) |
-              (other[i] & carrier[0]);
+    result[i] =
+        (*this)[i] ^ other[i] ^ carrier[0];  // Evaluate a bit at position i
+    carrier = ((*this)[i] & other[i]) |      // Evaluate the overflow bit
+        ((*this)[i] & carrier[0]) | 
+        (other[i] & carrier[0]);
     ++i;
   }
 
@@ -49,39 +52,54 @@ QInt QInt::operator+(const QInt& other) const {
 }
 
 QInt QInt::operator-(const QInt& other) const {
-  QInt result;
-  result = *this + other._getTwoComplement();
+  QInt result;  // Store the result
+  result = *this + other.getTwoComplement();
   return result;
 }
 
 QInt QInt::operator*(const QInt& other) const {
-  QInt multiplier =
-      ((*this)[BIN_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
-  QInt multiplicand =
-      (other[BIN_LENGTH - 1] ^ 1) ? other : other._getTwoComplement();
-  QInt result;
+  // Convert from signed QInts to unsigned QInts
+  QInt multiplier =                     // Convert the multiplier
+      ((*this)[BIN_LENGTH - 1] ^ 1) ?
+      *this :
+      this->getTwoComplement();  
+  QInt multiplicand =                   // Convert the mltiplicand
+      (other[BIN_LENGTH - 1] ^ 1) ?
+      other :
+      other.getTwoComplement();  
+  QInt result;                         // Store the result
 
+  // Evaluate the result accordingly to a multiplicand bit at position i,
+  // if it is 0 then do nothing, if it is 1 then add the multiplier to the
+  // result, then shift left by 1 position each iteration
   size_t i = 0;
   while (i < BIN_LENGTH) {
     result = (multiplicand[i] ^ 1) ? result : result + (multiplier << i);
     ++i;
   }
 
+  // Decide whether the result is a signed or unsigned QInt
   result = (other[BIN_LENGTH - 1] ^ (*this)[BIN_LENGTH - 1])
-               ? result._getTwoComplement()
+               ? result.getTwoComplement()
                : result;
 
   return result;
 }
 
 QInt QInt::operator/(const QInt& other) const {
-  QInt quotient =
-      ((*this)[BIN_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
-  QInt divisor =
-      (other[BIN_LENGTH - 1] ^ 1) ? other : other._getTwoComplement();
-  QInt remainder;
+  // Convert from signed QInts to unsigned QInts
+  QInt quotient =                       // Convert the quotient
+      ((*this)[BIN_LENGTH - 1] ^ 1) ? 
+      *this : 
+      this->getTwoComplement();
+  QInt divisor =                        // Convert the divisor
+      (other[BIN_LENGTH - 1] ^ 1) ? 
+      other : 
+      other.getTwoComplement();
+  QInt remainder;                       // Store the remainder
 
-  size_t i = BIN_LENGTH;
+  // ??? algorithm
+  int i = BIN_LENGTH;
   while (i > 0) {
     remainder = remainder << 1;
     remainder[0] = quotient[BIN_LENGTH - 1];
@@ -97,23 +115,34 @@ QInt QInt::operator/(const QInt& other) const {
     --i;
   }
 
+  // Decide whether the remainder and quotient
+  // are signed or unsigned QInts
   remainder =
-      ((*this)[BIN_LENGTH - 1] ^ 1) ? remainder : remainder._getTwoComplement();
-  quotient = (other[BIN_LENGTH - 1] ^ (*this)[BIN_LENGTH - 1])
-                 ? quotient._getTwoComplement()
-                 : quotient;
+      ((*this)[BIN_LENGTH - 1] ^ 1) ? 
+      remainder : 
+      remainder.getTwoComplement();
+  quotient = 
+      (other[BIN_LENGTH - 1] ^ (*this)[BIN_LENGTH - 1]) ?
+      quotient.getTwoComplement() :
+      quotient;
 
   return quotient;
 }
 
 QInt QInt::operator%(const QInt& other) const {
- QInt quotient =
-      ((*this)[BIN_LENGTH - 1] ^ 1) ? *this : (*this)._getTwoComplement();
-  QInt divisor =
-      (other[BIN_LENGTH - 1] ^ 1) ? other : other._getTwoComplement();
-  QInt remainder;
+  // Convert from signed QInts to unsigned QInts
+  QInt quotient =                       // Convert the quotient
+      ((*this)[BIN_LENGTH - 1] ^ 1) ?
+      *this : 
+      this->getTwoComplement();
+  QInt divisor =                        // Convert the divisor
+      (other[BIN_LENGTH - 1] ^ 1) ? 
+      other : 
+      other.getTwoComplement();
+  QInt remainder;                       // Store the remainder
 
-  size_t i = BIN_LENGTH;
+  // ??? algorithm
+  int i = BIN_LENGTH;
   while (i > 0) {
     remainder = remainder << 1;
     remainder[0] = quotient[BIN_LENGTH - 1];
@@ -129,30 +158,41 @@ QInt QInt::operator%(const QInt& other) const {
     --i;
   }
 
+  // Decide whether the remainder and quotient
+  // are signed or unsigned QInts
   remainder =
-      ((*this)[BIN_LENGTH - 1] ^ 1) ? remainder : remainder._getTwoComplement();
-  quotient = (other[BIN_LENGTH - 1] ^ (*this)[BIN_LENGTH - 1])
-                 ? quotient._getTwoComplement()
-                 : quotient;
+      ((*this)[BIN_LENGTH - 1] ^ 1) ? 
+      remainder : 
+      remainder.getTwoComplement();
+  quotient = 
+      (other[BIN_LENGTH - 1] ^ (*this)[BIN_LENGTH - 1])
+      ? quotient.getTwoComplement()
+      : quotient;
 
   return remainder;
 }
 
 bool QInt::operator<(const QInt& other) const {
+  // Return if both QInts are 0
   if (*this == other) {
     return false;
   }
 
-  if ((*this)[BIN_LENGTH - 1] ^ other[BIN_LENGTH - 1]) {
+  // Check for the two QInts are opposite or not,
+  // then return value accordingly
+  if ((*this)[BIN_LENGTH - 1] ^     // If both are opposite, 
+      other[BIN_LENGTH - 1]) {      // then return the unsigned one
     return other[BIN_LENGTH - 1] ^ 1;
 
-  } else {
+  } else {                          // If not, then return the one 
+                                    // with the larger significant bit
     for (int i = BIN_LENGTH - 2; i >= 0; i--) {
       if ((*this)[i] ^ other[i]) return other[i];
     }
   }
 
-  throw std::runtime_error("Cannot return value");
+  // Just to eliminate warning
+  throw std::runtime_error("Cannot evaluate");
 }
 
 bool QInt::operator>(const QInt& other) const {
@@ -168,51 +208,51 @@ bool QInt::operator>=(const QInt& other) const {
 }
 
 bool QInt::operator==(const QInt& other) const {
-  return (*this)._bin == other._bin;
+  return this->_bin == other._bin;
 }
 
 bool QInt::operator!=(const QInt& other) const {
-  return (*this)._bin != other._bin;
+  return this->_bin != other._bin;
 }
 
 QInt QInt::operator<<(size_t pos) const {
   QInt result;
-  result._bin = (*this)._bin << pos;
+  result._bin = this->_bin << pos;
   return result;
 }
 
 QInt QInt::operator>>(size_t pos) const {
   QInt result;
-  result._bin = (*this)._bin >> pos;
+  result._bin = this->_bin >> pos;
   return result;
 }
 
 QInt QInt::operator&(const QInt& other) const {
   QInt result;
-  result._bin = (*this)._bin & other._bin;
+  result._bin = this->_bin & other._bin;
   return result;
 }
 
 QInt QInt::operator|(const QInt& other) const {
   QInt result;
-  result._bin = (*this)._bin | other._bin;
+  result._bin = this->_bin | other._bin;
   return result;
 }
 
 QInt QInt::operator^(const QInt& other) const {
   QInt result;
-  result._bin = (*this)._bin ^ other._bin;
+  result._bin = this->_bin ^ other._bin;
   return result;
 }
 
 QInt QInt::operator~() const {
   QInt result;
-  result._bin = ~(*this)._bin;
+  result._bin = ~this->_bin;
   return result;
 }
 
 QInt QInt::rol(size_t pos) const {
-  QInt result = *this;
+  QInt result = *this;  // Store the result
 
   size_t i = 0;
   while (i < pos) {
@@ -225,7 +265,7 @@ QInt QInt::rol(size_t pos) const {
 }
 
 QInt QInt::ror(size_t pos) const {
-  QInt result = *this;
+  QInt result = *this;  // Store the result
 
   size_t i = 0;
   while (i < pos) {
@@ -237,20 +277,22 @@ QInt QInt::ror(size_t pos) const {
   return result;
 }
 
-std::string QInt::getContent() const { return (*this)._bin.to_string(); }
+std::string QInt::getBin() const { return this->_bin.to_string(); }
 
-QInt QInt::_getTwoComplement() const { return QInt("1", 2) + ~*this; }
+QInt QInt::getTwoComplement() const { return QInt("1", 2) + ~*this; }
 
 std::string QInt::hexToBin(const std::string& hexStr) {
-  std::bitset<4> bchCarriers[HEX_LENGTH];     // Binary-coded hexadecimal blocks (4-bit each)
-  std::string binStr = "";                    // Result string
-  std::map<char, size_t> hexMap = 
+  std::bitset<4> bchCarriers[HEX_LENGTH];  // Binary-coded hexadecimal array
+  std::string binStr = "";                 // Store the result string
+  std::map<char, size_t> hexMap =          // Store the hex map derived from macro        
       Utility::getMap(HEX_MAP, 16);
 
+  // Find each BCH associate with each key 
+  // and convert it to binary
   size_t i = 0;
   while (i < HEX_LENGTH) {
-    bchCarriers[i] = std::bitset<4>(      // Find numbers associate with keys and
-        hexMap.find(hexStr[i])->second);  // convert them to 4-bit binary
+    bchCarriers[i] = std::bitset<4>(      
+        hexMap.find(hexStr[i])->second);  
 
     binStr += bchCarriers[i].to_string();
     ++i;
@@ -260,22 +302,25 @@ std::string QInt::hexToBin(const std::string& hexStr) {
 }
 
 std::string QInt::binToHex(const std::string& binStr) {
-  std::bitset<4> bchCarriers[HEX_LENGTH];  // Binary-coded hexadecimal blocks (4-bit each)
-  QInt bin(binStr, 2);                     // Store binary number
-  std::string hexStr = "";                 // Result string
+  std::bitset<4> bchCarriers[HEX_LENGTH];  // Binary-coded hexadecimal array
+  QInt bin(binStr, 2);                     // Store the binary number interpreted by the binStr
+  std::string hexStr = "";                 // Store the result string
 
+  // Convert every 4-bit block of the binStr
+  // to a BCH and store it in the former array
   size_t i = 0;
   while (i < HEX_LENGTH) {
-    for (size_t j = 0; j < 4; ++j) {         // Shift every 4-bit block and "tempResult" 4 times
-      bchCarriers[i] = bchCarriers[i] << 1;  // concurrently as they are the same binary
+    for (size_t j = 0; j < 4; ++j) {         
+      bchCarriers[i] = bchCarriers[i] << 1;  
       bchCarriers[i][0] = bin[BIN_LENGTH - 1];
       bin = bin << 1;
     }
     ++i;
   }
 
+  // Copy the BCH array to the result string
   i = 0;
-  while (i < HEX_LENGTH) {                   // Map every 4-bit block to every hex character
+  while (i < HEX_LENGTH) {
     hexStr += HEX_MAP[bchCarriers[i].to_ulong()];
     ++i;
   }
@@ -283,24 +328,27 @@ std::string QInt::binToHex(const std::string& binStr) {
   return hexStr;
 }
 
-// Reverse double dabble algorithm
 std::string QInt::decToBin(const std::string& decStr) {
-  std::bitset<4> bcdCarriers[DEC_LENGTH];          // Binary-code decimal blocks (4-bit each)
-  std::bitset<1> bcdFirstBitCarriers[DEC_LENGTH];  // Store the first bit of 4-bit blocks
-  QInt bin;                                        // Store temporary binary number
-  std::string binStr = "";                         // Result string
-  std::map<char, size_t> decMap = 
+  std::bitset<4> bcdCarriers[DEC_LENGTH];          // Binary-code decimal array
+  std::bitset<1> bcdFirstBitCarriers[DEC_LENGTH];  // Store the first bit of every BCD
+  QInt bin;                                        // Store a temporary binary number
+  std::string binStr = "";                         // Store the result string
+  std::map<char, size_t> decMap =                  // Store the dec map derived from macro  
       Utility::getMap(DEC_MAP, 10);
 
+  // Find each BCD associate with each key
+  // and convert it to binary
   size_t i = 0;
   while (i < DEC_LENGTH) {
-    bcdCarriers[i] = std::bitset<4>(           // Find numbers associate with keys and
-        decMap.find(decStr[i + 1])->second);   // convert them to 4-bit binary
+    bcdCarriers[i] = std::bitset<4>(           
+        decMap.find(decStr[i + 1])->second); 
     ++i;
   }
 
+  // Reverse double dabble algorithm 
+  // (read document for detail)
   i = 0;
-  while (i < BIN_LENGTH) {                    // Shift "tempResult" and all 4-bit blocks as one
+  while (i < BIN_LENGTH) {
     for (int j = DEC_LENGTH - 1; j >= 0; --j) {
       bcdFirstBitCarriers[j][0] = bcdCarriers[j][0];
     }
@@ -308,14 +356,12 @@ std::string QInt::decToBin(const std::string& decStr) {
     bin = bin >> 1;
     bin[BIN_LENGTH - 1] = bcdFirstBitCarriers[DEC_LENGTH - 1][0];
 
-    for (int j = DEC_LENGTH - 1; j > 0; --j) {  // Shift every 4-bit block
+    for (int j = DEC_LENGTH - 1; j > 0; --j) {
       bcdCarriers[j] = bcdCarriers[j] >> 1;
       bcdCarriers[j][3] = bcdFirstBitCarriers[j - 1][0];
 
-      if (bcdCarriers[j].to_ulong() > 7         // Subtract 3 to every block that
-          && i != BIN_LENGTH - 1) {             // is bigger than 7 to ensure
-        bcdCarriers[j] =                        // they are in base 10
-            Utility::subtract(bcdCarriers[j], 3);  
+      if (bcdCarriers[j].to_ulong() > 7 && i != BIN_LENGTH - 1) {
+        bcdCarriers[j] = Utility::subtract(bcdCarriers[j], 3);
       }
     }
 
@@ -323,55 +369,61 @@ std::string QInt::decToBin(const std::string& decStr) {
     ++i;
   }
 
-  bin = (decStr[0] == '-') ? bin._getTwoComplement() : bin;
+  // Decide whether the decStr is signed or unsigned
+  bin = (decStr[0] == '-') ? bin.getTwoComplement() : bin;
   binStr = bin._bin.to_string();
 
   return binStr;
 }
 
-// Double dabble algorithm
 std::string QInt::binToDec(const std::string& binStr) {
-  std::bitset<4> bcdCarriers[DEC_LENGTH];          // Binary-coded decimal blocks (4-bit each)
-  std::bitset<1> bcdFirstBitCarriers[DEC_LENGTH];  // Store the first bit of 4-bit blocks
-  std::string decStr =                                   // Initialize with empty string
-      (QInt(binStr, 2)[BIN_LENGTH - 1] ^ 1) ? "" : "-";  // (with sign if the first bit is 1)
+  std::bitset<4> bcdCarriers[DEC_LENGTH];          // Binary-coded decimal array
+  std::bitset<1> bcdFirstBitCarriers[DEC_LENGTH];  // Store the first bit of every BCD
+  std::string decStr =                             // Store the result, initialize with 
+      (QInt(binStr, 2)[BIN_LENGTH - 1] ^ 1) ?      // empty string or with sign
+      "" : "-";  
+  QInt bin;                                        // Store a temporary binary number
 
-  QInt bin;                                        // Store binary number
-  if (QInt(binStr, 2) != QInt("0", 2) &&           // Return number cannot be calculated
+  // Decide whether the binary string can be evaluated or not;
+  // if it is min value (cannot be evaluated), then return the min macro,
+  // else discard the sign bit (get 2's complement of signed binary
+  // before discarding its sign bit)
+  if (QInt(binStr, 2) != QInt("0", 2) &&           
       (QInt(binStr, 2) << 1) == QInt("0", 2)) {
     return INT128_MIN;  
 
-  } else {                                         // Initialize with "bin" (with 2's complement
-    bin =                                          // if the first bit is 1)
-        (QInt(binStr, 2)[BIN_LENGTH - 1] ^ 1)
-            ? QInt(binStr, 2) << 1
-            : QInt(binStr, 2)._getTwoComplement() << 1;
+  } else {                                        
+    bin =                                          
+        (QInt(binStr, 2)[BIN_LENGTH - 1] ^ 1) ?
+        QInt(binStr, 2) << 1 :
+        QInt(binStr, 2).getTwoComplement() << 1;
   }
 
+  // Double dabble algorithm
+  // (read document for detail)
   size_t i = 1;
-  while (i < BIN_LENGTH) {                                // Shift "tempResult" and all 4-bit blocks as one
-    for (int j = DEC_LENGTH - 2; j >= 0; --j) {  
-      bcdFirstBitCarriers[j][0] = bcdCarriers[j + 1][3];  // Store the first bit of "tempResult" and every block
+  while (i < BIN_LENGTH) {
+    for (int j = DEC_LENGTH - 2; j >= 0; --j) {
+      bcdFirstBitCarriers[j][0] = bcdCarriers[j + 1][3];
     }
 
     bcdFirstBitCarriers[DEC_LENGTH - 1][0] = bin[BIN_LENGTH - 1];
     bin = bin << 1;
 
-    for (int j = DEC_LENGTH - 1; j > 0; --j) {  // Shift every 4-bit block
+    for (int j = DEC_LENGTH - 1; j > 0; --j) {
       bcdCarriers[j] = bcdCarriers[j] << 1;
       bcdCarriers[j][0] = bcdFirstBitCarriers[j][0];
 
-      if (bcdCarriers[j].to_ulong() > 4         // Add 3 to every block that
-          && i != BIN_LENGTH - 1) {             // is bigger than 4 to ensure
-        bcdCarriers[j] =                        // they are in base 10
-            Utility::add(bcdCarriers[j], 3);  
+      if (bcdCarriers[j].to_ulong() > 4 && i != BIN_LENGTH - 1) {
+        bcdCarriers[j] = Utility::add(bcdCarriers[j], 3);
       }
     }
     ++i;
   }
 
+  // Copy the BCD array to the result string
   i = 0;
-  while (i < DEC_LENGTH) {  // Map every 4-bit block to every dec character
+  while (i < DEC_LENGTH) {
     decStr += DEC_MAP[bcdCarriers[i].to_ulong()];
     ++i;
   }

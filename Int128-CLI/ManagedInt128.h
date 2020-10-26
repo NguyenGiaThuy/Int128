@@ -23,12 +23,13 @@ ref class ManagedInt128 {
   native::int128::QInt* _instance;
 
  protected:
+  // Convert a system string to std string (managed to unmanaged)
+  // Precondition: Input must be a system string
+  // Postcondition: Output is a std string
   static std::string systemStringToStdString(System::String ^ systemString) {
-    std::string stdString(
-        (const char*)
-            System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(
-                systemString)
-                .ToPointer());
+    std::string stdString((const char*)
+        System::Runtime::InteropServices::Marshal::
+        StringToHGlobalAnsi(systemString).ToPointer());
     return stdString;
   }
 };
