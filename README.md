@@ -19,7 +19,7 @@ Là phần dùng để chuyển đổi giữa các hệ cơ số của chương 
 ## Keypad
 Giao diện của tab Keypad với bố cục bảng số và dấu. Cho phép nhập chuỗi tính toán theo quy tắc toán học. Có thể nhận input từ bàn phím. 
 
-![I'm an inline-style link](README/2.png)
+![](README/2.png)
 
 ## Converter
-![I'm an inline-style link](README/1.png)
+![](README/1.png)
