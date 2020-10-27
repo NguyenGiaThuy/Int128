@@ -23,8 +23,8 @@ class Utility {
     // by correcting its size and format
     if (decStr[0] != '-') {  // Copy decStr and assign leading zeros to
                              // clonedDecStr if decStr indicates positive number
-      clonedDecStr.replace(clonedDecStr.size() - decStr.size(), decStr.size(),
-                           decStr);
+      clonedDecStr.replace(clonedDecStr.size() - decStr.size(), 
+          decStr.size(), decStr);
       clonedDecStr = "+" + clonedDecStr;
 
     } else {                 // Copy decStr with sign and assign leading zeros to clonedDecStr
@@ -46,15 +46,16 @@ class Utility {
 
     // Convert an ordinary string to a formatted string
     // by correcting its size and format
-    if (clonedHexStr[0] >= 'A' || clonedHexStr[0] >= 'a' ||
+    if (clonedHexStr[0] >= 'A' || 
+        clonedHexStr[0] >= 'a' ||
         clonedHexStr[0] >= '8') {
       clonedHexStr = std::string(HLENGTH, 'F');
-      clonedHexStr.replace(clonedHexStr.size() - 
-          hexStr.size(), hexStr.size(), hexStr);
+      clonedHexStr.replace(clonedHexStr.size() - hexStr.size(), 
+          hexStr.size(), hexStr);
     } else {
       clonedHexStr = std::string(HLENGTH, '0');
-      clonedHexStr.replace(clonedHexStr.size() - 
-          hexStr.size(), hexStr.size(), hexStr);
+      clonedHexStr.replace(clonedHexStr.size() - hexStr.size(),
+          hexStr.size(), hexStr);
     }
 
     clonedHexStr = toUpper(clonedHexStr);  // Transform string to upper-case
@@ -106,7 +107,7 @@ class Utility {
     while (i < 4) {
       result[i] = a[i] ^ b[i] ^ carrier[0];  // Evaluate a bit at i position
       carrier = (a[i] & b[i]) |              // Evaluate the overflow bit
-          (a[i] & carrier[0]) |
+          (a[i] & carrier[0]) | 
           (b[i] & carrier[0]);  
       ++i;
     }
@@ -127,8 +128,8 @@ class Utility {
   // Precondition: Input must be two 4-bit bitsets
   // Postcondition: Output is the subtraction of
   // the two former 4-bit bitsets (can be overflow)
-  static std::bitset<4> subtract(const std::bitset<4>& a,
-                                 const std::bitset<4>& b) {
+  static std::bitset<4> subtract(
+      const std::bitset<4>& a, const std::bitset<4>& b) {
     std::bitset<4> result;                 // Store the result
     result = add(a, getTwoComplement(b));  // Add a to 2's complement of b
     return result;

@@ -8,21 +8,26 @@
         mc:Ignorable="d"
         fw:AcrylicWindow.Enabled="True"
         ResizeMode="NoResize"
-        Title="MainWindow" Height="500" Width="930">
+        Title="MainWindow" Height="500" Width="930"
+        Loaded="Window_Loaded">
     <Grid x:Name="WindowsGrid">
         <Grid x:Name="FeaturesGrid" fw:PointerTracker.Enabled="True" Background="#0000" Margin="0,0,0.4,0.4">
-            <StackPanel HorizontalAlignment="Left" Width="154">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="41*"/>
+                <ColumnDefinition Width="267*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel HorizontalAlignment="Left" Width="154" Grid.ColumnSpan="2" Margin="0,0,0,-0.4">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Features" Margin="17" FontWeight="DemiBold" Foreground="Black" FontSize="22"/>
                 </StackPanel>
-                <ListView x:Name="FeaturesList" FontSize="15" Margin="0,0,0.4,0" SelectionChanged="FeaturesList_SelectionChanged">
-                    <ListViewItem x:Name="KeypadList" Padding="1">
+                <ListView x:Name="FeaturesList" FontSize="15" Margin="0,0,0.4,0">
+                    <ListViewItem x:Name="KeypadList" Padding="1" MouseLeftButtonUp="KeypadList_MouseLeftButtonUp">
                         <StackPanel Orientation="Horizontal" Width="106">
                             <materialDesign:PackIcon Kind="KeyboardVariant" Margin="15" Foreground="Black"/>
                             <TextBlock Text="Keypad" VerticalAlignment="Center" Foreground="Black"/>
                         </StackPanel>
                     </ListViewItem>
-                    <ListViewItem x:Name="ConverterList" Padding="1">
+                    <ListViewItem x:Name="ConverterList" Padding="1" MouseLeftButtonUp="ConverterList_MouseLeftButtonUp">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Arrow" Margin="15" Foreground="Black"/>
                             <TextBlock VerticalAlignment="Center" Text="Converter" Foreground="black"/>

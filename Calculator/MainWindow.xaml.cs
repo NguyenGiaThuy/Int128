@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Calculator
 {
@@ -11,27 +12,24 @@ namespace Calculator
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ConverterList_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ContentGrid.Children.Clear();
+            ContentGrid.Children.Add(new UserControlConverter());
+        }
+
+        private void KeypadList_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
             ContentGrid.Children.Clear();
             ContentGrid.Children.Add(new UserControlKeypad());
         }
 
-        private void FeaturesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            int index = FeaturesList.SelectedIndex;
-
-            switch(index)
-            {
-                case 0:
-                    ContentGrid.Children.Clear();
-                    ContentGrid.Children.Add(new UserControlKeypad());
-                    break;
-                case 1:
-                    ContentGrid.Children.Clear();
-                    ContentGrid.Children.Add(new UserControlConverter());
-                    break;
-                default:
-                    break;
-            }
+            ContentGrid.Children.Clear();
+            ContentGrid.Children.Add(new UserControlKeypad());
         }
     }
 }

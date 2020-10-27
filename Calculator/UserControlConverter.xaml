@@ -16,7 +16,9 @@
 
             <Label Margin="27,128,242,282" FontSize="20" Content="From" Height="40"/>
             <ComboBox x:Name="FromComboBox" FontSize="26" HorizontalAlignment="Left" Margin="50,168,0,0" VerticalAlignment="Top" Width="493" Height="46">
+
                 <ComboBoxItem x:Name="DecItem" Margin="10,0,002,0" FontStyle="Italic">Decimal</ComboBoxItem>
+
                 <ComboBoxItem x:Name="BinItem" Margin="10,0,0.0,0" FontStyle="Italic">Binary</ComboBoxItem>
                 <ComboBoxItem x:Name="HexItem" Margin="10,0,0,0" FontStyle="Italic">Hexadecimal</ComboBoxItem>
             </ComboBox>

@@ -4,9 +4,8 @@ namespace CLI {
 namespace Int128 {
 QInt::QInt() : ManagedInt128(new native::int128::QInt()) {}
 
-QInt::QInt(System::String ^ decStr)
-    : ManagedInt128(
-          new native::int128::QInt((systemStringToStdString(decStr)), 10)) {}
+QInt::QInt(System::String ^ decStr) : ManagedInt128(
+    new native::int128::QInt((systemStringToStdString(decStr)), 10)) {}
 
 QInt ^ QInt::operator=(QInt ^ other) {
   *this->_instance = *other->_instance;
@@ -44,7 +43,6 @@ QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
   *result->_instance = *a->_instance * *b->_instance;
 
   QInt ^ qint0 = gcnew QInt;
-
   if ((a > qint0 && b > qint0 && result < qint0) ||
       (a < qint0 && b < qint0 && result < qint0) ||
       (a < qint0 && b > qint0 && result > qint0) ||
@@ -149,9 +147,9 @@ QInt ^ QInt::ror(size_t pos) {
 
 System::String ^ QInt::DecToBin(System::String ^ decStr) {
   System::String ^ resultStr = gcnew System::String(
-      native::int128::QInt::decToBin(native::int128::Utility::formatDecStr(
-                                         systemStringToStdString(decStr)))
-          .c_str());
+      native::int128::QInt::decToBin(
+      native::int128::Utility::formatDecStr(
+      systemStringToStdString(decStr))).c_str());
 
   if (resultStr->Contains("1")) {
     resultStr = resultStr->TrimStart('0');
@@ -181,9 +179,9 @@ System::String ^ QInt::BinToDec(System::String ^ binStr) {
 
 System::String ^ QInt::HexToBin(System::String ^ hexStr) {
   System::String ^ resultStr = gcnew System::String(
-      native::int128::QInt::hexToBin(native::int128::Utility::formatHexStr(
-                                         systemStringToStdString(hexStr)))
-          .c_str());
+      native::int128::QInt::hexToBin(
+      native::int128::Utility::formatHexStr(
+      systemStringToStdString(hexStr))).c_str());
 
   if (resultStr->Contains("1")) {
     resultStr = resultStr->TrimStart('0');
