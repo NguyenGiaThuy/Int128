@@ -139,24 +139,56 @@ namespace Calculator
             Keyboard.Focus(InputTextbox);
         }
 
-        private Regex regexHex = new Regex("[^0-9a-fA-F]+");
-        private Regex regexBin = new Regex("[^0-1]+");
-        private Regex regexDec = new Regex("[^0-9]+");
+        private Regex regexHex = new Regex("[0-9a-fA-F]+");
+        private Regex regexBin = new Regex("[0-1]+");
+        private Regex regexDec = new Regex("[0-9]+");
 
         private void InputTextbox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             int selectedIndex = FromComboBox.SelectedIndex;
-            switch(selectedIndex)
+            switch (selectedIndex)
             {
                 case 0:
-                    e.Handled = regexDec.IsMatch(e.Text);
+                    if (InputTextbox.Text.Contains("-"))
+                    {
+                        e.Handled = !regexDec.IsMatch(e.Text);
+                    }
+                    else
+                    {
+                        e.Handled = !Regex.IsMatch(e.Text, "[-0-9]+");
+                    }
                     break;
                 case 1:
-                    e.Handled = regexBin.IsMatch(e.Text);
+                    e.Handled = !regexBin.IsMatch(e.Text);
                     break;
                 case 2:
-                    e.Handled = regexHex.IsMatch(e.Text);
+                    e.Handled = !regexHex.IsMatch(e.Text);
                     break;
+            }
+        }
+
+
+        private void InputTextbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int selectedIndex = FromComboBox.SelectedIndex;
+            switch (selectedIndex)
+            {
+                case 0:
+                    InputTextbox.MaxLength = (InputTextbox.Text.Contains('-')) ? 39 : 38;
+                    break;
+                case 1:
+                    InputTextbox.MaxLength = 128;
+                    break;
+                case 2:
+                    InputTextbox.MaxLength = 32;
+                    break;
+            }
+
+            int cursorPos = InputTextbox.CaretIndex;
+            if (InputTextbox.Text.Contains(" "))
+            {
+                InputTextbox.Text = Regex.Replace(InputTextbox.Text, @"\s+", "");
+                InputTextbox.Select(cursorPos - 1, 0);
             }
         }
     }

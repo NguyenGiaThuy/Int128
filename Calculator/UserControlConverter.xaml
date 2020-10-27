@@ -12,7 +12,7 @@
             <Border BorderBrush="Black" BorderThickness="1" Margin="10" CornerRadius="25"/>
 
             <Label Margin="27,29,31,381" FontSize="20" Content="Input box" Height="40"/>
-            <TextBox x:Name="InputTextbox" Cursor="IBeam" CharacterCasing="Upper" PreviewTextInput="InputTextbox_PreviewTextInput" Loaded="InputTextbox_Loaded" KeyUp="InputTextbox_KeyUp" MaxLength="39" Margin="50,69,31,336" FontSize="26" FontWeight="DemiBold" HorizontalContentAlignment="Right" Height="45"/>
+            <TextBox x:Name="InputTextbox" Cursor="IBeam" CharacterCasing="Upper" TextChanged="InputTextbox_TextChanged" PreviewTextInput="InputTextbox_PreviewTextInput" Loaded="InputTextbox_Loaded" KeyUp="InputTextbox_KeyUp" MaxLength="38" Margin="50,69,31,336" FontSize="26" FontWeight="DemiBold" HorizontalContentAlignment="Right" Height="45"/>
 
             <Label Margin="27,128,242,282" FontSize="20" Content="From" Height="40"/>
             <ComboBox x:Name="FromComboBox" SelectedIndex="0" SelectionChanged="FromComboBox_SelectionChanged" FontSize="26" HorizontalAlignment="Left" Margin="50,168,0,0" VerticalAlignment="Top" Width="493" Height="46">
