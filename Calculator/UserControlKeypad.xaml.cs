@@ -172,7 +172,7 @@ namespace Calculator
             catch(ExternalException)
             {
                 state = State.ExceptionThrown;
-                LargeTextBox.Text = "Bug occured";
+                LargeTextBox.Text = "Invalid user input";
             }
         }
 

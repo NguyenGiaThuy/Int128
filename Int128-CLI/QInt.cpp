@@ -13,43 +13,53 @@ QInt ^ QInt::operator=(QInt ^ other) {
 }
 
 QInt ^ QInt::operator+(QInt ^ a, QInt ^ b) {
-  QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance + *b->_instance;
-
   QInt ^ qint0 = gcnew QInt;
-  if ((a > qint0 && b < qint0 && result < qint0) ||
-      (a < qint0 && b > qint0 && result > qint0)) {
+  QInt ^ qintMin = gcnew QInt(INT128_MIN);
+  QInt ^ qintMax = gcnew QInt(INT128_MAX);
+
+  if (a > qint0 && b > qint0 && b > qintMax - a) {
+      throw gcnew System::OverflowException("Overflow");
+  } 
+  if (a < qint0 && b < qint0 && b < qintMin - a) {
     throw gcnew System::OverflowException("Overflow");
   }
 
+  QInt ^ result = gcnew QInt;
+  *result->_instance = *a->_instance + *b->_instance;
   return result;
 }
 
 QInt ^ QInt::operator-(QInt ^ a, QInt ^ b) {
-  QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance - *b->_instance;
-
   QInt ^ qint0 = gcnew QInt;
-  if ((a > qint0 && b < qint0 && result < qint0) ||
-      (a < qint0 && b > qint0 && result > qint0)) {
+  QInt ^ qintMin = gcnew QInt(INT128_MIN);
+  QInt ^ qintMax = gcnew QInt(INT128_MAX);
+
+  if (a > qint0 && b < qint0 && a > qintMax + b) {
+    throw gcnew System::OverflowException("Overflow");
+  }
+  if (a < qint0 && b > qint0 && a < qintMin + b) {
     throw gcnew System::OverflowException("Overflow");
   }
 
+  QInt ^ result = gcnew QInt;
+  *result->_instance = *a->_instance - *b->_instance;
   return result;
 }
 
 QInt ^ QInt::operator*(QInt ^ a, QInt ^ b) {
-  QInt ^ result = gcnew QInt;
-  *result->_instance = *a->_instance * *b->_instance;
-
   QInt ^ qint0 = gcnew QInt;
-  if ((a > qint0 && b > qint0 && result < qint0) ||
-      (a < qint0 && b < qint0 && result < qint0) ||
-      (a < qint0 && b > qint0 && result > qint0) ||
-      (a > qint0 && b < qint0 && result > qint0)) {
+  QInt ^ qintMin = gcnew QInt(INT128_MIN);
+  QInt ^ qintMax = gcnew QInt(INT128_MAX);
+
+  if (a > qintMax / b) {
+    throw gcnew System::OverflowException("Overflow");
+  }
+  if (a < qintMin / b) {
     throw gcnew System::OverflowException("Overflow");
   }
 
+  QInt ^ result = gcnew QInt;
+  *result->_instance = *a->_instance * *b->_instance;
   return result;
 }
 
