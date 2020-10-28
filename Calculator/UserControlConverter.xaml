@@ -11,22 +11,22 @@
         <Grid fw:PointerTracker.Enabled="True" Background="White" VerticalAlignment="Top" Height="460">
             <Border BorderBrush="Black" BorderThickness="1" Margin="10" CornerRadius="25"/>
 
-            <Label Margin="27,29,31,381" FontSize="20" Content="Input box" Height="40"/>
-            <TextBox x:Name="InputTextbox" Cursor="IBeam" CharacterCasing="Upper" TextChanged="InputTextbox_TextChanged" PreviewTextInput="InputTextbox_PreviewTextInput" Loaded="InputTextbox_Loaded" KeyUp="InputTextbox_KeyUp" MaxLength="38" Margin="50,69,31,336" FontSize="26" FontWeight="DemiBold" HorizontalContentAlignment="Right" Height="45"/>
+            <Label Margin="32,22,31,408" FontSize="16" Content="Input box"/>
+            <TextBox x:Name="InputTextbox" Cursor="IBeam" TextWrapping="Wrap" CharacterCasing="Upper" TextChanged="InputTextbox_TextChanged" PreviewTextInput="InputTextbox_PreviewTextInput" Loaded="InputTextbox_Loaded" KeyUp="InputTextbox_KeyUp" MaxLength="38" Margin="31,57,30,334" FontSize="20" FontWeight="DemiBold" HorizontalContentAlignment="Left" BorderThickness="1"/>
 
-            <Label Margin="27,128,242,282" FontSize="20" Content="From" Height="40"/>
-            <ComboBox x:Name="FromComboBox" SelectedIndex="0" SelectionChanged="FromComboBox_SelectionChanged" FontSize="26" HorizontalAlignment="Left" Margin="50,168,0,0" VerticalAlignment="Top" Width="493" Height="46">
+            <Label Margin="27,131,242,298" FontSize="16" Content="From"/>
+            <ComboBox x:Name="FromComboBox" SelectedIndex="0" SelectionChanged="FromComboBox_SelectionChanged" FontSize="20" HorizontalAlignment="Left" Margin="50,161,0,0" VerticalAlignment="Top" Width="493" Height="46">
                 <ComboBoxItem x:Name="DecItem" Margin="10,0,002,0" FontStyle="Italic">Decimal</ComboBoxItem>
                 <ComboBoxItem x:Name="BinItem" Margin="10,0,0.0,0" FontStyle="Italic">Binary</ComboBoxItem>
                 <ComboBoxItem x:Name="HexItem" Margin="10,0,0,0" FontStyle="Italic">Hexadecimal</ComboBoxItem>
             </ComboBox>
-            <Button x:Name="ProcessBtn" Content="Process" FontSize="24" FontWeight="Normal" Margin="560,133,31,246"
+            <Button x:Name="ProcessBtn" Content="Process" FontSize="24" FontWeight="Normal" Margin="560,140,31,253"
                     Style="{StaticResource ButtonRevealStyle}" Click="ProcessBtn_Click"/>
-            <Grid Margin="10,234,10,10">
-                <Label x:Name="OutputLabel1" FontSize="20" Content="Binary" Height="40" Margin="20,6,10,174.6"/>
-                <TextBox x:Name="OutputTextBox1" Cursor="Arrow" BorderThickness="0" IsReadOnly="True" FontSize="26" HorizontalContentAlignment="Left" Text="" Margin="45,46,0,125" HorizontalAlignment="Left" Width="688" Height="45"/>
-                <Label x:Name="OutputLabel2" FontSize="20" Content="Hexadecimal" Height="40" Margin="20,103,0,73"/>
-                <TextBox x:Name="OutputTextBox2" Cursor="Arrow" BorderThickness="0" IsReadOnly="True" FontSize="26" HorizontalContentAlignment="Left" Text="" Height="45" Margin="45,143,27,28"/>
+            <Grid Margin="10,203,10,10">
+                <Label x:Name="OutputLabel1" FontSize="16" Content="To binary" Margin="20,14,10,193"/>
+                <TextBox x:Name="OutputTextBox1" Cursor="Arrow" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" FontSize="20" HorizontalContentAlignment="Left" Margin="20,50,0,131" HorizontalAlignment="Left" Width="720"/>
+                <Label x:Name="OutputLabel2" FontSize="16" Content="To hexadecimal" Margin="20,127,0,85"/>
+                <TextBox x:Name="OutputTextBox2" Cursor="Arrow" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" FontSize="20" HorizontalContentAlignment="Left" Margin="20,161,20,22"/>
             </Grid>
         </Grid>
     </Grid>

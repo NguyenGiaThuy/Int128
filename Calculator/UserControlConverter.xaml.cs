@@ -46,16 +46,16 @@ namespace Calculator
                 switch (selectedIndex)
                 {
                     case 0:
-                        OutputLabel1.Content = "Binary";
-                        OutputLabel2.Content = "Hexadecimal";
+                        OutputLabel1.Content = "To binary";
+                        OutputLabel2.Content = "To hexadecimal";
                         break;
                     case 1:
-                        OutputLabel1.Content = "Decimal";
-                        OutputLabel2.Content = "Hexadecimal";
+                        OutputLabel1.Content = "To decimal";
+                        OutputLabel2.Content = "To hexadecimal";
                         break;
                     case 2:
-                        OutputLabel1.Content = "Decimal";
-                        OutputLabel2.Content = "Binary";
+                        OutputLabel1.Content = "To decimal";
+                        OutputLabel2.Content = "To binary";
                         break;
                     default:
                         break;
