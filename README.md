@@ -11,7 +11,7 @@
 Có 2 tab chức năng là `Keypad` và `Converter`
 
 ## Keypad
-Là phần dùng để tính toán cơ bản của chương trình. Bao gồm các phép tính cơ bản `+`, `-`, `*`, `/`. Được mô phỏng tương tự với chương trình Calculator mặc định của Microsoft Windows 10 với khả năng tính toán *big numbers*.
+Là phần dùng để tính toán cơ bản của chương trình. Bao gồm các phép tính cơ bản `+`, `-`, `*`, `/`. Được mô phỏng tương tự với chương trình Calculator mặc định của Microsoft Windows 10 nhưng với khả năng tính toán *big numbers*.
 
 Giao diện của tab Keypad với bố cục bảng số và dấu. Cho phép nhập chuỗi tính toán theo quy tắc toán học. Có thể nhận input từ bàn phím. 
 
