@@ -48,14 +48,17 @@ namespace Calculator
                     case 0:
                         OutputLabel1.Content = "To binary";
                         OutputLabel2.Content = "To hexadecimal";
+                        InputTextbox.MaxLength = 38;
                         break;
                     case 1:
                         OutputLabel1.Content = "To decimal";
                         OutputLabel2.Content = "To hexadecimal";
+                        InputTextbox.MaxLength = 128;
                         break;
                     case 2:
-                        OutputLabel1.Content = "To decimal";
-                        OutputLabel2.Content = "To binary";
+                        OutputLabel1.Content = "To binary";
+                        OutputLabel2.Content = "To decimal";
+                        InputTextbox.MaxLength = 32;
                         break;
                     default:
                         break;
@@ -149,6 +152,9 @@ namespace Calculator
             switch (selectedIndex)
             {
                 case 0:
+                    InputTextbox.MaxLength = (e.Text == "-" ||
+                        InputTextbox.Text.Contains('-')) ? 39 : 38;
+
                     if (InputTextbox.Text.Contains("-"))
                     {
                         e.Handled = !regexDec.IsMatch(e.Text);
@@ -162,6 +168,7 @@ namespace Calculator
                     e.Handled = !regexBin.IsMatch(e.Text);
                     break;
                 case 2:
+                    InputTextbox.MaxLength = 32;
                     e.Handled = !regexHex.IsMatch(e.Text);
                     break;
             }
@@ -169,21 +176,7 @@ namespace Calculator
 
 
         private void InputTextbox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            int selectedIndex = FromComboBox.SelectedIndex;
-            switch (selectedIndex)
-            {
-                case 0:
-                    InputTextbox.MaxLength = (InputTextbox.Text.Contains('-')) ? 39 : 38;
-                    break;
-                case 1:
-                    InputTextbox.MaxLength = 128;
-                    break;
-                case 2:
-                    InputTextbox.MaxLength = 32;
-                    break;
-            }
-
+        { 
             int cursorPos = InputTextbox.CaretIndex;
             if (InputTextbox.Text.Contains(" "))
             {

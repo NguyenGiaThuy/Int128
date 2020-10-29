@@ -45,8 +45,8 @@ class Utility {
     std::string clonedHexStr;  // Store cloned hex string
 
     // Convert an ordinary string to a formatted string
-    // by correcting its size and format
-    if (clonedHexStr[0] >= 'A' || 
+    // by correcting its size and format (DEPRECATED)
+    /*if (clonedHexStr[0] >= 'A' || 
         clonedHexStr[0] >= 'a' ||
         clonedHexStr[0] >= '8') {
       clonedHexStr = std::string(HLENGTH, 'F');
@@ -56,7 +56,13 @@ class Utility {
       clonedHexStr = std::string(HLENGTH, '0');
       clonedHexStr.replace(clonedHexStr.size() - hexStr.size(),
           hexStr.size(), hexStr);
-    }
+    }*/
+
+    // Convert an ordinary string to a formatted string
+    // by correcting its size and format
+    clonedHexStr = std::string(HLENGTH, '0');
+    clonedHexStr.replace(clonedHexStr.size() - hexStr.size(), 
+        hexStr.size(), hexStr);
 
     clonedHexStr = toUpper(clonedHexStr);  // Transform string to upper-case
     return clonedHexStr;
