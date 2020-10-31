@@ -5,6 +5,7 @@
 - Có 2 chức năng chính: Tính toán cơ bản và bộ chuyển đổi giữa các hệ cơ số.
 - Giao diện *Fluent style* hiện đại, tương tự các ứng dụng mặc định của Microsoft Windows 10.
 - Tương thích với hệ điều hành Microsoft Windows.
+- **Chưa hỗ trợ kiểu dữ liệu float**
 
 
 ## Chức năng
