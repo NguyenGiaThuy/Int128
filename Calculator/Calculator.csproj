@@ -124,6 +124,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Int128-CLI\Int128-CLI.vcxproj">
       <Project>{032b902a-bfd7-4b13-a602-96e1cd1a2661}</Project>
       <Name>Int128-CLI</Name>
@@ -132,9 +135,6 @@
       <Project>{e0e8baad-a574-46fb-89b5-618955d1fa1f}</Project>
       <Name>SimpleExpressionEngine</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.2.0\build\MaterialDesignThemes.targets')" />
