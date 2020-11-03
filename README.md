@@ -1,7 +1,7 @@
 # BigNum Calculator
 
 ## Giới thiệu
-- Là một chương trình tính toán với *big numbers* nguyên và có phần thập phân.
+- Là một chương trình tính toán với *big numbers* nguyên.
 - Có 2 chức năng chính: Tính toán cơ bản và bộ chuyển đổi giữa các hệ cơ số.
 - Giao diện *Fluent style* hiện đại, tương tự các ứng dụng mặc định của Microsoft Windows 10.
 - Tương thích với hệ điều hành Microsoft Windows.
