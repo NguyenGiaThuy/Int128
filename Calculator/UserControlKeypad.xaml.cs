@@ -274,37 +274,6 @@ namespace Calculator
             }
         }
 
-        private void OnDecimalClicked()
-        {
-            switch (state)
-            {
-                case State.OperandClicked: 
-                    LargeTextBox.Text = (LargeTextBox.Text.Contains('.')) ?
-                        LargeTextBox.Text : LargeTextBox.Text + ".";
-                    state = State.OperandClicked;
-                    break;
-                case State.OperatorClicked: 
-                    LargeTextBox.Text += ".";
-                    state = State.OperandClicked;
-                    break;
-                case State.LeftParentheseClicked: 
-                    LargeTextBox.Text += ".";
-                    state = State.OperandClicked;
-                    break;
-                case State.RightParentheseClicked: 
-                    // Do nothing
-                    break;
-                case State.EvaluationClicked: 
-                    ResetState();
-                    LargeTextBox.Text += ".";
-                    state = State.OperandClicked;
-                    break;
-                case State.ExceptionThrown: 
-                    ResetState();
-                    break;
-            }
-        }
-
         private void OnSignClicked()
         {
             switch (state)
@@ -355,11 +324,6 @@ namespace Calculator
         private void PlusMinusBtn_Click(object sender, RoutedEventArgs e)
         {
             OnSignClicked();
-        }
-
-        private void DotBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OnDecimalClicked();
         }
 
         private void ZeroBtn_Click(object sender, RoutedEventArgs e)
@@ -492,25 +456,15 @@ namespace Calculator
            Keyboard.Focus(LargeTextBox);
         }
 
-        private void LargeTextBox_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                //case Key.Enter:
-                //    OnEvaluateClicked();
-                //    break;
-                case Key.Delete:
-                    ResetState();
-                    break;
-            }
-        }
-
         private void LargeTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (!Keyboard.IsKeyDown(Key.LeftShift))
             {
                 switch (e.Key)
                 {
+                    case Key.Delete:
+                        ResetState();
+                        break;
                     case Key.Enter:
                         OnEvaluateClicked();
                         break;
@@ -567,10 +521,6 @@ namespace Calculator
                     case Key.Divide:
                     case Key.OemQuestion:
                         OnOperatorClicked('÷');
-                        break;
-                    case Key.Decimal:
-                    case Key.OemPeriod:
-                        OnDecimalClicked();
                         break;
                     case Key.S:
                         OnSignClicked();
