@@ -1,4 +1,4 @@
-# Calculator
+# BigNum Calculator
 
 ## Giới thiệu
 - Là một chương trình tính toán với *big numbers* nguyên và có phần thập phân.
@@ -16,7 +16,7 @@ Là phần dùng để tính toán cơ bản của chương trình. Bao gồm c�
 
 Giao diện của tab Keypad với bố cục bảng số và dấu. Cho phép nhập chuỗi tính toán theo quy tắc toán học. Có thể nhận input từ bàn phím. 
 
-![](https://i.ibb.co/NWLxCyY/2.png)
+![](https://i.ibb.co/8Y4ZwmL/1.png)
 
 ## Converter
 Là phần dùng để chuyển đổi giữa các hệ cơ số của chương trình. Bao gồm 3 hệ cơ số là `Decimal` (Hệ thập phân), `Binary` (Hệ nhị phân) và `Hexadecimal` (Hệ thập lục phân).
@@ -27,12 +27,12 @@ Giao diện của tab Converter với bố cục:
 
 Minh họa cho chuyển đổi từ **hệ thập phân** sang **hệ nhị phân** và **hệ thập lục phân**:
 
-![](https://i.ibb.co/wL76Kpz/4.png)
+![](https://i.ibb.co/3MMsFLv/2.png)
 
 Minh họa cho chuyển đổi từ **hệ nhị phân** sang **hệ thập phân** và **hệ thập lục phân**:
 
-![](https://i.ibb.co/vwWt9r2/5.png)
+![](https://i.ibb.co/y0F73CC/3.png)
 
 Minh họa cho chuyển đổi từ **hệ thập lục phân** sang **hệ thập phân** và **hệ nhị phân**:
 
-![](https://i.ibb.co/82tLmzH/6.png)
+![](https://i.ibb.co/5n2rnDr/4.png)
