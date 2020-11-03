@@ -158,8 +158,8 @@ QInt ^ QInt::ror(size_t pos) {
 System::String ^ QInt::DecToBin(System::String ^ decStr) {
   System::String ^ resultStr = gcnew System::String(
       native::int128::QInt::decToBin(
-      native::int128::Utility::formatDecStr(
-      systemStringToStdString(decStr))).c_str());
+      native::utility::formatDecStr(
+      systemStringToStdString(decStr), 'i')).c_str());
 
   if (resultStr->Contains("1")) {
     resultStr = resultStr->TrimStart('0');
@@ -190,7 +190,7 @@ System::String ^ QInt::BinToDec(System::String ^ binStr) {
 System::String ^ QInt::HexToBin(System::String ^ hexStr) {
   System::String ^ resultStr = gcnew System::String(
       native::int128::QInt::hexToBin(
-      native::int128::Utility::formatHexStr(
+      native::utility::formatHexStr(
       systemStringToStdString(hexStr))).c_str());
 
   if (resultStr->Contains("1")) {

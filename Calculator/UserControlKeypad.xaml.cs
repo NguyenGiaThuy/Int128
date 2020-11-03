@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Text;
 
 using CLI.Int128;
 using SimpleExpressionEngine;
@@ -48,6 +49,7 @@ namespace Calculator
         }
 
         private State state;
+        private string previousOperand;
 
         private void OnOperandClicked(int num)
         {
@@ -63,14 +65,17 @@ namespace Calculator
                         LargeTextBox.Text += (LargeTextBox.Text.Length < 38) ? num.ToString() : "";
                     }
 
+                    previousOperand = LargeTextBox.Text;
                     state = State.OperandClicked;
                     break;
                 case State.OperatorClicked:
                     LargeTextBox.Text = num.ToString();
+                    previousOperand = LargeTextBox.Text;
                     state = State.OperandClicked;
                     break;
                 case State.LeftParentheseClicked:
                     LargeTextBox.Text = num.ToString();
+                    previousOperand = LargeTextBox.Text;
                     state = State.OperandClicked;
                     break;
                 case State.RightParentheseClicked:
@@ -79,6 +84,7 @@ namespace Calculator
                 case State.EvaluationClicked: 
                     ResetState();
                     LargeTextBox.Text = num.ToString();
+                    previousOperand = LargeTextBox.Text;
                     state = State.OperandClicked;
                     break;
                 case State.ExceptionThrown: 
@@ -87,6 +93,8 @@ namespace Calculator
             }
         }
 
+        private char previousOperator;
+
         private void OnOperatorClicked(char op)
         {
             switch (state)
@@ -94,6 +102,7 @@ namespace Calculator
                 case State.OperandClicked: 
                     SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
                     LargeTextBox.Text = "0";
+                    previousOperator = op;
                     state = State.OperatorClicked;
                     break;
                 case State.OperatorClicked: 
@@ -103,15 +112,18 @@ namespace Calculator
                 case State.LeftParentheseClicked: 
                     SmallTextBox.Text += NormalizeExpression(LargeTextBox.Text) + op.ToString();
                     LargeTextBox.Text = "0";
+                    previousOperator = op;
                     state = State.OperatorClicked;
                     break;
                 case State.RightParentheseClicked: 
                     SmallTextBox.Text += op.ToString();
+                    previousOperator = op;
                     state = State.OperatorClicked;
                     break;
                 case State.EvaluationClicked: 
                     SmallTextBox.Text = result.Content + op.ToString();
                     LargeTextBox.Text = "0";
+                    previousOperator = op;
                     state = State.OperatorClicked;
                     break;
                 case State.ExceptionThrown: 
@@ -119,6 +131,8 @@ namespace Calculator
                     break;
             }
         }
+
+        private StringBuilder expressionStr = new StringBuilder(24, 40);
 
         private void OnEvaluateClicked()
         {
@@ -146,7 +160,17 @@ namespace Calculator
                         state = State.EvaluationClicked;
                         break;
                     case State.EvaluationClicked:
-                        SmallTextBox.Text = LargeTextBox.Text + "=";
+                        expressionStr.Clear();
+                        expressionStr.Append(result.Content + 
+                            previousOperator.ToString() + 
+                            previousOperand + "=");
+                        SmallTextBox.Text = expressionStr.ToString();
+
+                        result = Parser.Parse(result.Content + 
+                            previousOperator.ToString() + 
+                            previousOperand).Eval();
+
+                        LargeTextBox.Text = result.Content;
                         state = State.EvaluationClicked;
                         break;
                     case State.ExceptionThrown: 
@@ -315,6 +339,8 @@ namespace Calculator
             LargeTextBox.Text = "0";
             state = State.OperandClicked;
             leftParentheseCount = 0;
+            previousOperand = "";
+            previousOperator = '\0';
             result = null;
         }
 
@@ -470,9 +496,9 @@ namespace Calculator
         {
             switch (e.Key)
             {
-                case Key.Enter:
-                    OnEvaluateClicked();
-                    break;
+                //case Key.Enter:
+                //    OnEvaluateClicked();
+                //    break;
                 case Key.Delete:
                     ResetState();
                     break;
@@ -485,6 +511,9 @@ namespace Calculator
             {
                 switch (e.Key)
                 {
+                    case Key.Enter:
+                        OnEvaluateClicked();
+                        break;
                     case Key.NumPad0:
                     case Key.D0:
                         OnOperandClicked(0);

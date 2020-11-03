@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         fw:AcrylicWindow.Enabled="True"
         ResizeMode="NoResize"
-        Title="MainWindow" Height="500" Width="930"
+        Title="BigNum Calculator" Height="500" Width="930"
         Loaded="Window_Loaded">
     <Grid x:Name="WindowsGrid">
         <Grid x:Name="FeaturesGrid" fw:PointerTracker.Enabled="True" Background="#0000" Margin="0,0,0.4,0.4">
