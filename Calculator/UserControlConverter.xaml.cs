@@ -27,7 +27,6 @@ namespace Calculator
         public UserControlConverter()
         {
             InitializeComponent();
-            MessageBox.Show("Hello");
         }
 
         private void ResetState()
